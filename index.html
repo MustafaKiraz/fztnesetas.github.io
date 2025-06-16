@@ -16,6 +16,10 @@
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
+    <!-- Quill Rich Text Editor Kütüphanesi -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
     <style>
         /* Mesh Gradyan Tasarım için Stiller */
         body {
@@ -34,9 +38,8 @@
 
         /* Renkler */
         :root {
-            --primary-color: #009688; /* Yeşil/Teal */
-            --primary-color-light: #00bfa5; /* Açık Yeşil/Teal */
-            --accent-color: #F7D9E3; /* Pembe */
+            --primary-color: #009688;
+            --primary-color-light: #00bfa5;
             --text-color-dark: #1f2937;
             --text-color-light: #6b7280;
             --bg-light: #ffffff;
@@ -48,15 +51,15 @@
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
         /* Modal Stilleri */
-        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); animation: fadeIn 0.3s; }
+        .modal { display: none; position: fixed; z-index: 201; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .modal-content { background-color: var(--bg-light); margin: 5% auto; padding: 2rem; border-radius: 12px; width: 90%; max-width: 800px; animation: scaleUp 0.4s ease-out; }
+        .modal-content { background-color: var(--bg-light); margin: 10% auto; padding: 2rem; border-radius: 12px; width: 90%; animation: scaleUp 0.4s ease-out; }
         @keyframes scaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .close-button { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; transition: color 0.2s; }
         .close-button:hover, .close-button:focus { color: var(--text-color-dark); }
 
         /* Buton Stili */
-        .btn { padding: 12px 28px; border-radius: 8px; font-weight: 600; transition: all 0.3s ease; display: inline-block; border: none; }
+        .btn { padding: 12px 28px; border-radius: 8px; font-weight: 600; transition: all 0.3s ease; display: inline-block; border: none; text-align: center; }
         .btn-primary { 
             background-image: linear-gradient(to right, var(--primary-color-light) 0%, var(--primary-color) 51%, var(--primary-color-light) 100%);
             background-size: 200% auto;
@@ -87,13 +90,64 @@
         .form-input:focus { outline: none; border-color: var(--primary-color); background-color: white; box-shadow: 0 0 0 3px rgba(0, 150, 136, 0.1); }
         
         /* Admin Paneli Stili */
-        #admin-panel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 200; width: 90%; max-width: 600px; background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
+        .admin-panel-base { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 200; width: 90%; background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
+        #admin-panel { max-width: 700px; }
+        #edit-post-panel, #delete-post-panel { max-width: 600px; }
 
         /* Genel Kart Stili */
         .card { background-color: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 16px; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; }
         .card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.08); }
         
         .text-primary { color: var(--primary-color); }
+
+        /* Bildirim Kutusu Stili */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            border-radius: 8px;
+            z-index: 1001;
+            opacity: 0;
+            transition: opacity 0.3s, top 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            font-weight: 500;
+            color: white;
+        }
+        .notification.show { opacity: 1; top: 40px; }
+        
+        /* Quill Editör Stilleri */
+        #editor-container { background-color: #fdfdff; }
+        .ql-toolbar.ql-snow { border-radius: 8px 8px 0 0; border-color: var(--border-color); }
+        .ql-container.ql-snow { border-radius: 0 0 8px 8px; border-color: var(--border-color); min-height: 150px; font-size: 16px; }
+        .ql-editor { padding: 14px 16px; }
+        #admin-panel .ql-toolbar.ql-snow, #admin-panel .ql-container.ql-snow { transition: all 0.3s; }
+        #admin-panel .ql-container.ql-snow:focus-within { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(0, 150, 136, 0.1); }
+        #admin-panel .ql-toolbar.ql-snow:focus-within { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(0, 150, 136, 0.1); border-bottom-color: var(--border-color);}
+
+        /* YENİ: WhatsApp Buton Stili */
+        .whatsapp-fab {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            background-color: #25D366;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 100;
+            transition: transform 0.2s ease-in-out;
+        }
+        .whatsapp-fab:hover {
+            transform: scale(1.1);
+        }
+
     </style>
 </head>
 <body>
@@ -114,7 +168,7 @@
         </nav>
         <div id="mobile-menu" class="hidden md:hidden bg-white/90 backdrop-blur-lg border-t border-gray-200/80">
             <ul class="flex flex-col items-center space-y-4 py-4">
-                 <li><a href="#home" class="nav-link page-link">Ana Sayfa</a></li>
+                <li><a href="#home" class="nav-link page-link">Ana Sayfa</a></li>
                 <li><a href="#about" class="nav-link page-link">Hakkımda</a></li>
                 <li><a href="#services" class="nav-link page-link">Hizmetler</a></li>
                 <li><a href="#blog" class="nav-link page-link">Blog</a></li>
@@ -124,10 +178,10 @@
         </div>
     </header>
 
-    <main>
-        <!-- Home Page Content -->
+    <main class="mb-32 md:mb-48">
+        <!-- Sayfa İçerikleri -->
         <section id="home" class="page">
-            <div class="container mx-auto px-6 py-20 md:py-32 flex flex-col md:flex-row items-center gap-12">
+            <div class="container mx-auto px-6 py-24 md:py-32 flex flex-col md:flex-row items-center gap-12">
                 <div class="md:w-1/2 text-center md:text-left">
                     <span class="font-semibold text-primary uppercase tracking-wider">Fizyoterapi & Sağlıklı Yaşam</span>
                     <h1 class="text-4xl md:text-6xl font-extrabold text-text-color-dark mt-4 mb-6 leading-tight">Hareketin İyileştirici Gücünü Keşfedin.</h1>
@@ -144,119 +198,204 @@
                 </div>
             </div>
         </section>
-
-        <!-- About Page Content -->
-        <section id="about" class="page py-20 md:py-28">
-            <div class="container mx-auto px-6">
+        <section id="about" class="page py-24 md:py-32">
+             <div class="container mx-auto px-6">
                 <div class="text-center mb-16 max-w-3xl mx-auto">
                     <h2 class="text-4xl md:text-5xl font-bold text-text-color-dark">Fizyoterapist Neşe Taş</h2>
                     <p class="text-lg text-text-color-light mt-4">İnsana ve harekete olan tutkumla çıktığım profesyonel yolculuğum.</p>
                 </div>
                 <div class="grid md:grid-cols-2 gap-12 items-center">
                      <div class="card p-2">
-                        <img src="https://images.pexels.com/photos/3912981/pexels-photo-3912981.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Fizyoterapist Adınız Soyadınız" class="rounded-xl w-full h-full object-cover">
+                         <img src="https://images.pexels.com/photos/3912981/pexels-photo-3912981.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Fizyoterapist Neşe Taş" class="rounded-xl w-full h-full object-cover">
                      </div>
                      <div class="space-y-8">
-                        <div class="card p-8"><h3 class="text-3xl font-bold text-text-color-dark mb-4">Deneyimlerim</h3><ul class="space-y-4"><li class="flex items-start"><i class="fas fa-check-circle text-primary mt-1 mr-3"></i><span><strong>[Hastane/Klinik Adı]</strong> - Fizyoterapist (2020-Günümüz)<br><span class="text-sm text-text-color-light">Kas-iskelet sistemi rehabilitasyonu ve sporcu sağlığı.</span></span></li><li class="flex items-start"><i class="fas fa-check-circle text-primary mt-1 mr-3"></i><span><strong>[Hastane/Klinik Adı]</strong> - Stajyer Fizyoterapist (2019-2020)<br><span class="text-sm text-text-color-light">Nörolojik ve ortopedik rehabilitasyon.</span></span></li></ul></div>
-                        <div class="card p-8"><h3 class="text-3xl font-bold text-text-color-dark mb-4">Eğitim & Sertifikalar</h3><ul class="space-y-4"><li class="flex items-start"><i class="fas fa-graduation-cap text-primary mt-1 mr-3"></i><span><strong>[Üniversite Adı]</strong> - Lisans</span></li><li class="flex items-start"><i class="fas fa-certificate text-primary mt-1 mr-3"></i><span>Klinik Pilates Eğitmenliği</span></li><li class="flex items-start"><i class="fas fa-certificate text-primary mt-1 mr-3"></i><span>Manuel Terapi Kursu</span></li></ul></div>
+                         <div class="card p-8"><h3 class="text-3xl font-bold text-text-color-dark mb-4">Deneyimlerim</h3><ul class="space-y-4"><li class="flex items-start"><i class="fas fa-check-circle text-primary mt-1 mr-3"></i><span><strong>[Hastane/Klinik Adı]</strong> - Fizyoterapist (2020-Günümüz)<br><span class="text-sm text-text-color-light">Kas-iskelet sistemi rehabilitasyonu ve sporcu sağlığı.</span></span></li><li class="flex items-start"><i class="fas fa-check-circle text-primary mt-1 mr-3"></i><span><strong>[Hastane/Klinik Adı]</strong> - Stajyer Fizyoterapist (2019-2020)<br><span class="text-sm text-text-color-light">Nörolojik ve ortopedik rehabilitasyon.</span></span></li></ul></div>
+                         <div class="card p-8"><h3 class="text-3xl font-bold text-text-color-dark mb-4">Eğitim & Sertifikalar</h3><ul class="space-y-4"><li class="flex items-start"><i class="fas fa-graduation-cap text-primary mt-1 mr-3"></i><span><strong>[Üniversite Adı]</strong> - Lisans</span></li><li class="flex items-start"><i class="fas fa-certificate text-primary mt-1 mr-3"></i><span>Klinik Pilates Eğitmenliği</span></li><li class="flex items-start"><i class="fas fa-certificate text-primary mt-1 mr-3"></i><span>Manuel Terapi Kursu</span></li></ul></div>
                      </div>
                 </div>
             </div>
         </section>
-
-        <!-- Services Page Content -->
-        <section id="services" class="page py-20 md:py-28">
-             <div class="container mx-auto px-6">
-                <div class="text-center mb-16 max-w-3xl mx-auto"><h2 class="text-4xl md:text-5xl font-bold text-text-color-dark">Hizmetlerimiz</h2><p class="text-lg text-text-color-light mt-4">Sağlığınıza giden yolda size özel, modern ve kanıta dayalı çözümler.</p></div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="card p-8 text-center border-t-4 border-transparent hover:border-primary"><div class="text-primary text-4xl mb-4"><i class="fas fa-running"></i></div><h3 class="text-2xl font-bold text-text-color-dark mb-2">Fizyoterapi</h3><p class="text-text-color-light">Kişiye özel değerlendirme ve tedavi programları ile fonksiyonel kapasitenizi en üst düzeye çıkarıyoruz.</p></div>
-                    <div class="card p-8 text-center border-t-4 border-transparent hover:border-primary"><div class="text-primary text-4xl mb-4"><i class="fas fa-hands-helping"></i></div><h3 class="text-2xl font-bold text-text-color-dark mb-2">Manuel Terapi</h3><p class="text-text-color-light">Sadece ellerle uygulanan özel mobilizasyon ve manipülasyon teknikleri ile ağrılarınıza son veriyoruz.</p></div>
-                    <div class="card p-8 text-center border-t-4 border-transparent hover:border-primary"><div class="text-primary text-4xl mb-4"><i class="fas fa-dumbbell"></i></div><h3 class="text-2xl font-bold text-text-color-dark mb-2">Klinik Pilates</h3><p class="text-text-color-light">Postürü düzeltmek, esnekliği artırmak ve merkez bölgesini güçlendirmek için fizyoterapist eşliğinde egzersizler.</p></div>
-                </div>
+        <section id="services" class="page py-24 md:py-32">
+            <div class="container mx-auto px-6">
+                 <div class="text-center mb-16 max-w-3xl mx-auto"><h2 class="text-4xl md:text-5xl font-bold text-text-color-dark">Hizmetlerimiz</h2><p class="text-lg text-text-color-light mt-4">Sağlığınıza giden yolda size özel, modern ve kanıta dayalı çözümler.</p></div>
+                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                     <div class="card p-8 text-center border-t-4 border-transparent hover:border-primary"><div class="text-primary text-4xl mb-4"><i class="fas fa-running"></i></div><h3 class="text-2xl font-bold text-text-color-dark mb-2">Fizyoterapi</h3><p class="text-text-color-light">Kişiye özel değerlendirme ve tedavi programları ile fonksiyonel kapasitenizi en üst düzeye çıkarıyoruz.</p></div>
+                     <div class="card p-8 text-center border-t-4 border-transparent hover:border-primary"><div class="text-primary text-4xl mb-4"><i class="fas fa-hands-helping"></i></div><h3 class="text-2xl font-bold text-text-color-dark mb-2">Manuel Terapi</h3><p class="text-text-color-light">Sadece ellerle uygulanan özel mobilizasyon ve manipülasyon teknikleri ile ağrılarınıza son veriyoruz.</p></div>
+                     <div class="card p-8 text-center border-t-4 border-transparent hover:border-primary"><div class="text-primary text-4xl mb-4"><i class="fas fa-dumbbell"></i></div><h3 class="text-2xl font-bold text-text-color-dark mb-2">Klinik Pilates</h3><p class="text-text-color-light">Postürü düzeltmek, esnekliği artırmak ve merkez bölgesini güçlendirmek için fizyoterapist eşliğinde egzersizler.</p></div>
+                 </div>
              </div>
         </section>
-
-        <!-- Blog Page Content -->
-        <section id="blog" class="page py-20 md:py-28">
+        <section id="blog" class="page py-24 md:py-32">
             <div class="container mx-auto px-6">
                  <div class="text-center mb-16 max-w-3xl mx-auto"><h2 class="text-4xl md:text-5xl font-bold text-text-color-dark">Blog</h2><p class="text-lg text-text-color-light mt-4">Sağlıklı yaşam ve fizyoterapi hakkında güncel, bilgilendirici yazılar.</p></div>
                 <div id="blog-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
             </div>
         </section>
-
-        <!-- Contact & Appointment Pages -->
-        <section id="contact" class="page py-20 md:py-28">
+        <section id="contact" class="page py-24 md:py-32">
              <div class="container mx-auto px-6">
-                <div class="text-center mb-16 max-w-3xl mx-auto"><h2 class="text-4xl md:text-5xl font-bold text-text-color-dark">İletişimde Kalalım</h2><p class="text-lg text-text-color-light mt-4">Sorularınız, önerileriniz veya randevu talepleriniz için bize ulaşmaktan çekinmeyin.</p></div>
-                <div class="card p-8 md:p-12 flex flex-col lg:flex-row gap-12">
-                    <div class="lg:w-1/2"><h3 class="text-3xl font-bold mb-6 text-text-color-dark">İletişim Bilgileri</h3><div class="space-y-6 text-lg text-gray-700"><p class="flex items-start"><i class="fas fa-map-marker-alt mt-1 mr-4 text-primary"></i><span>Barbaros, Ak Zambak Sok. Varyap Meridian A Blok No2 kat 39 daire319, 34746 Ataşehir/İstanbul, Türkiye</span></p><p class="flex items-center"><i class="fas fa-phone mr-4 text-primary"></i><a href="tel:+905424528803" class="hover:text-primary">+90 (542) 452 88 03</a></p><p class="flex items-center"><i class="fas fa-envelope mr-4 text-primary"></i><a href="mailto:info@fztadiniz.com" class="hover:text-primary">info@fztadiniz.com</a></p></div></div>
-                    <div class="lg:w-1/2 h-80 lg:h-auto rounded-xl overflow-hidden"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6022.535625749074!2d29.099185048206603!3d40.99751108540818!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14cac882ab345d37%3A0x9b4a2af9b2b902cf!2sVaryap%20Meridian%20A%20BLOK!5e0!3m2!1str!2sca!4v1750095719858!5m2!1str!2sca" width="450" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
-                </div>
+                 <div class="text-center mb-16 max-w-3xl mx-auto"><h2 class="text-4xl md:text-5xl font-bold text-text-color-dark">İletişimde Kalalım</h2><p class="text-lg text-text-color-light mt-4">Sorularınız, önerileriniz veya randevu talepleriniz için bize ulaşmaktan çekinmeyin.</p></div>
+                 <!-- GÜNCELLEME: İletişim kartı düzenlendi -->
+                 <div class="card p-8 md:p-12 flex flex-col lg:flex-row gap-12">
+                     <div class="lg:w-1/2"><h3 class="text-3xl font-bold mb-6 text-text-color-dark">İletişim Bilgileri</h3><div class="space-y-6 text-lg text-gray-700"><p class="flex items-start"><i class="fas fa-map-marker-alt mt-1 mr-4 text-primary"></i><span>Barbaros, Ak Zambak Sok. Varyap Meridian A Blok No2 kat 39 daire319, 34746 Ataşehir/İstanbul, Türkiye</span></p><p class="flex items-center"><i class="fas fa-phone mr-4 text-primary"></i><a href="tel:+905424528803" class="hover:text-primary">+90 (542) 452 88 03</a></p><p class="flex items-center"><i class="fas fa-envelope mr-4 text-primary"></i><a href="mailto:info@fztnesetas.com" class="hover:text-primary">info@fztnesetas.com</a></p></div></div>
+                     <div class="lg:w-1/2 min-h-[300px] lg:min-h-full rounded-xl overflow-hidden"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6022.535625749074!2d29.099185048206603!3d40.99751108540818!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14cac882ab345d37%3A0x9b4a2af9b2b902cf!2sVaryap%20Meridian%20A%20BLOK!5e0!3m2!1str!2sca!4v1750095719858!5m2!1str!2sca" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+                 </div>
              </div>
         </section>
-
-        <section id="appointment" class="page py-20 md:py-28">
+        <section id="appointment" class="page py-24 md:py-32">
             <div class="container mx-auto px-6">
                 <div class="max-w-2xl mx-auto card p-8 md:p-12">
                      <div class="text-center mb-8"><p class="text-primary font-semibold">Randevu Formu</p><h2 class="text-3xl md:text-4xl font-bold text-text-color-dark mt-1">Harekete Geçmek İçin Formu Doldurun</h2></div>
-                    
-                    <!-- DÜZENLENMİŞ FORM: Formspree için action ve method eklendi -->
-                    <form id="appointment-form" action="https://formspree.io/f/sizin_benzersiz_kodunuz" method="POST">
-                        <div class="space-y-6">
-                            <input type="text" id="name" name="name" class="form-input" placeholder="Ad ve Soyad" required>
-                            <input type="tel" id="phone" name="phone" class="form-input" placeholder="Telefon Numarası*" required>
-                            <input type="email" id="email" name="email" class="form-input" placeholder="E-posta" required>
-                            <textarea id="message" name="message" rows="5" class="form-input" placeholder="Tedavi görmek istediğiniz konu..." required></textarea>
-                            <div class="flex items-center">
-                                <input id="consent" name="consent" type="checkbox" required class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary">
-                                <label for="consent" class="ml-3 block text-sm text-text-color-light">Verilerin iletişim amacıyla işlenmesine izin veriyorum.*</label>
-                            </div>
-                            <button type="submit" id="form-submit-btn" class="w-full btn btn-primary text-lg">Randevu Talebi Gönder</button>
-                        </div>
-                        <p id="form-status" class="text-center mt-4"></p>
-                    </form>
-
+                     <form id="appointment-form" action="https://formspree.io/f/sizin_benzersiz_kodunuz" method="POST">
+                         <div class="space-y-6">
+                             <input type="text" name="name" class="form-input" placeholder="Ad ve Soyad" required>
+                             <input type="tel" name="phone" class="form-input" placeholder="Telefon Numarası*" required>
+                             <input type="email" name="email" class="form-input" placeholder="E-posta" required>
+                             <textarea name="message" rows="5" class="form-input" placeholder="Tedavi görmek istediğiniz konu..." required></textarea>
+                             <div class="flex items-center">
+                                 <input id="consent" name="consent" type="checkbox" required class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary">
+                                 <label for="consent" class="ml-3 block text-sm text-text-color-light">Verilerin iletişim amacıyla işlenmesine izin veriyorum.*</label>
+                             </div>
+                             <button type="submit" id="form-submit-btn" class="w-full btn btn-primary text-lg">Randevu Talebi Gönder</button>
+                         </div>
+                         <p id="form-status" class="text-center mt-4"></p>
+                     </form>
                 </div>
             </div>
         </section>
     </main>
     
-    <!-- Blog Post Modal -->
-    <div id="blog-modal" class="modal"><div class="modal-content"><span id="close-modal-button" class="close-button">&times;</span><h2 id="modal-title" class="text-3xl font-bold text-text-color-dark mb-4"></h2><p id="modal-date" class="text-sm text-text-color-light mb-4"></p><img id="modal-image" src="" alt="Blog görseli" class="w-full h-64 object-cover rounded-xl mb-6"><div id="modal-body" class="text-lg text-gray-700 space-y-4"></div></div></div>
+    <!-- Modallar -->
+    <div id="blog-modal" class="modal"><div class="modal-content" style="max-width: 800px;"><span id="close-blog-modal-button" class="close-button">&times;</span><h2 id="modal-title" class="text-3xl font-bold text-text-color-dark mb-4"></h2><p id="modal-date" class="text-sm text-text-color-light mb-4"></p><img id="modal-image" src="" alt="Blog görseli" class="w-full h-64 object-cover rounded-xl mb-6"><div id="modal-body" class="text-lg text-gray-700 space-y-4"></div></div></div>
+    <div id="password-modal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <span id="close-password-modal-button" class="close-button">&times;</span>
+            <h3 class="text-2xl font-bold mb-4 text-center">Admin Girişi</h3>
+            <form id="password-form" class="space-y-4">
+                <input type="password" id="password-input" class="form-input text-center" placeholder="Şifreyi Girin" required>
+                <button type="submit" class="w-full btn btn-primary">Giriş Yap</button>
+            </form>
+        </div>
+    </div>
+    <div id="admin-menu-modal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <span id="close-admin-menu-button" class="close-button">&times;</span>
+            <h3 class="text-2xl font-bold mb-6 text-center">Yönetim Menüsü</h3>
+            <div class="flex flex-col space-y-4">
+                <button id="open-create-panel-btn" class="w-full btn btn-primary">Blog Yazısı Oluştur</button>
+                <button id="open-edit-panel-btn" class="w-full btn btn-secondary">Blog Yazısı Düzenle</button>
+                <button id="open-delete-panel-btn" class="w-full btn btn-secondary !border-red-500 !text-red-500 hover:!bg-red-50">Blog Yazısı Sil</button>
+            </div>
+        </div>
+    </div>
+    <div id="edit-post-panel" class="admin-panel-base">
+        <span id="close-edit-panel-button" class="close-button">&times;</span>
+        <h3 class="text-2xl font-bold mb-4">Yazı Düzenle</h3>
+        <div id="edit-post-list" class="max-h-96 overflow-y-auto space-y-3"></div>
+    </div>
+    <div id="delete-post-panel" class="admin-panel-base">
+        <span id="close-delete-panel-button" class="close-button">&times;</span>
+        <h3 class="text-2xl font-bold mb-4">Yazı Sil</h3>
+        <div id="delete-post-list" class="max-h-96 overflow-y-auto space-y-3"></div>
+    </div>
+    
+    <div id="confirmation-modal" class="modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <h3 class="text-xl font-bold mb-4 text-center">Bu yazıyı silmek istediğinize emin misiniz?</h3>
+            <p class="text-center text-text-color-light mb-6">Bu işlem geri alınamaz.</p>
+            <div class="flex justify-center gap-4">
+                <button id="confirm-delete-btn" class="btn btn-primary !bg-red-600 hover:!bg-red-700 flex-1">Evet, Sil</button>
+                <button id="cancel-delete-btn" class="btn btn-secondary flex-1">İptal</button>
+            </div>
+        </div>
+    </div>
 
-    <!-- Gizli Admin Paneli -->
-    <div id="admin-panel"><h3 class="text-2xl font-bold mb-4">Yeni Blog Yazısı Ekle</h3><form id="add-post-form" class="space-y-4"><input type="text" id="post-title" class="form-input" placeholder="Yazı Başlığı" required><input type="text" id="post-image" class="form-input" placeholder="Görsel URL" required><textarea id="post-summary" class="form-input" rows="3" placeholder="Özet (Kartta görünecek metin)" required></textarea><textarea id="post-fullContent" class="form-input" rows="8" placeholder="Yazının Tamamı (HTML kullanabilirsiniz)" required></textarea><div class="flex gap-4"><button type="submit" class="btn btn-primary flex-1">Yazıyı Ekle</button><button type="button" id="close-admin-panel" class="btn btn-secondary flex-1">Kapat</button></div></form></div>
+    <!-- Blog Oluşturma/Güncelleme Paneli -->
+    <div id="admin-panel" class="admin-panel-base">
+        <h3 id="admin-panel-title" class="text-2xl font-bold mb-4">Yeni Blog Yazısı Ekle</h3>
+        <form id="add-post-form" class="space-y-4">
+            <input type="hidden" id="post-id-input">
+            <input type="text" id="post-title" class="form-input" placeholder="Yazı Başlığı" required>
+            <input type="text" id="post-image" class="form-input" placeholder="Görsel URL" required>
+            <textarea id="post-summary" class="form-input" rows="3" placeholder="Özet (Kartta görünecek metin)" required></textarea>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Yazının Tamamı</label>
+                <div id="editor-container"><div id="post-editor"></div></div>
+            </div>
+            <div class="flex gap-4">
+                <button type="submit" id="form-submit-button" class="btn btn-primary flex-1">Yazıyı Ekle</button>
+                <button type="button" id="close-admin-panel" class="btn btn-secondary flex-1">Kapat</button>
+            </div>
+        </form>
+    </div>
 
     <!-- Footer -->
     <footer class="bg-gradient-to-r from-emerald-200 via-pink-100 to-white text-gray-700">
         <div class="container mx-auto px-6 py-20">
              <div class="text-center">
-                <a href="#home" class="text-2xl font-bold text-black page-link">Fizyoterapist Neşe Taş</a>
-                <!-- DÜZENLENMİŞ SOSYAL MEDYA LİNKLERİ -->
-                <div class="flex justify-center space-x-6 my-6">
-                    <a href="https://www.instagram.com/fztnesetas/" target="_blank" class="hover:text-white transition-colors"><i class="fab fa-instagram fa-lg"></i></a>
-                    <a href="https://tr.linkedin.com/in/nese-tas-10ba78199?trk=people-guest_profile-result-card_result-card_full-click" target="_blank" class="hover:text-white transition-colors"><i class="fab fa-linkedin fa-lg"></i></a>
-                    <a href="https://www.tiktok.com/@fztnese" target="_blank" class="hover:text-white transition-colors"><i class="fab fa-tiktok fa-lg"></i></a>
-                </div>
+                 <a href="#home" class="text-2xl font-bold text-black page-link">Fizyoterapist Neşe Taş</a>
+                 <div class="flex justify-center space-x-6 my-6">
+                     <a href="https://www.instagram.com/fztnesetas/" target="_blank" class="hover:text-white transition-colors"><i class="fab fa-instagram fa-lg"></i></a>
+                     <a href="https://tr.linkedin.com/in/nese-tas-10ba78199?trk=people-guest_profile-result-card_result-card_full-click" target="_blank" class="hover:text-white transition-colors"><i class="fab fa-linkedin fa-lg"></i></a>
+                     <a href="https://www.tiktok.com/@fztnese" target="_blank" class="hover:text-white transition-colors"><i class="fab fa-tiktok fa-lg"></i></a>
+                 </div>
              </div>
-            <div class="mt-8 border-t border-gray-700 pt-8 text-center"><p>&copy; <span id="year"></span> | Fizyoterapist Adınız Soyadınız. Tüm hakları saklıdır.</p><div class="mt-4 max-w-3xl mx-auto"><p class="text-xs font-semibold">YASAL UYARI</p><p class="text-xs text-gray-500">Bu site sağlık hizmeti vermemektedir, kişileri bilgilendirmek ve site sahibi hakkında bilgi vermek amacı ile hazırlanmıştır. Sitedeki bilgiler hastalıkların tanı veya tedavisinde kullanılmak üzere verilmemiştir. Tanı ve tedaviler mutlaka bir hekim tarafından yapılması gereken işlemlerdir.</p></div></div>
+            <div class="mt-8 border-t border-gray-700 pt-8 text-center"><p>&copy; <span id="year"></span> Fizyoterapist Neşe Taş. Tüm hakları saklıdır.</p><div class="mt-4 max-w-3xl mx-auto"><p class="text-xs font-semibold">YASAL UYARI</p><p class="text-xs text-gray-500">Bu site sağlık hizmeti vermemektedir, kişileri bilgilendirmek ve site sahibi hakkında bilgi vermek amacı ile hazırlanmıştır. Sitedeki bilgiler hastalıkların tanı veya tedavisinde kullanılmak üzere verilmemiştir. Tanı ve tedaviler mutlaka bir hekim tarafından yapılması gereken işlemlerdir.</p></div></div>
         </div>
     </footer>
+    
+    <!-- YENİ: WhatsApp Butonu -->
+    <a href="https://wa.me/905424528803" target="_blank" class="whatsapp-fab" aria-label="WhatsApp üzerinden iletişime geçin">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             
-            const initialBlogPosts = [
-                { id: 'post1', title: 'Ofis Çalışanları İçin 5 Basit Egzersiz', date: '15 Haziran 2025', image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=1820&auto=format&fit=crop', summary: 'Masa başında geçen uzun saatlerin getirdiği ağrıları önlemek için yapabileceğiniz kolay ve etkili hareketler.', fullContent: `<p>Günümüzün büyük bir kısmını ofiste, masa başında oturarak geçiriyoruz. Bu durum, zamanla boyun, sırt ve bel ağrılarına neden olabilir. Ancak endişelenmeyin, gün içinde yapacağınız birkaç basit egzersizle bu ağrıların önüne geçebilirsiniz.</p><h3 class="text-xl font-bold mt-4">1. Boyun Esnetme</h3><p>Başınızı yavaşça sağ omzunuza doğru eğin ve 5 saniye bekleyin. Aynı hareketi sol taraf için de tekrarlayın. Bu, boyun kaslarınızı rahatlatacaktır.</p><h3 class="text-xl font-bold mt-4">2. Omuz Çevirme</h3><p>Omuzlarınızı kulaklarınıza doğru kaldırıp yavaşça geriye doğru dairesel hareketlerle çevirin. Bu hareketi 10 kez tekrarlayın.</p><p>Bu basit hareketler, kan dolaşımınızı artırarak daha enerjik hissetmenize yardımcı olacaktır.</p>` },
-                { id: 'post2', title: 'Spor Yaralanmalarından Nasıl Korunulur?', date: '10 Haziran 2025', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=1770&auto=format&fit=crop', summary: 'Isınma, soğuma ve doğru antrenman teknikleri ile sakatlanma riskini en aza indirin.', fullContent: `<p>Spor yapmak sağlıklıdır ancak doğru yapılmadığında yaralanmalara yol açabilir. Isınma ve soğuma egzersizleri, sakatlanma riskini önemli ölçüde azaltır. Antrenman öncesi 10-15 dakika dinamik esneme hareketleri yapmayı unutmayın.</p>` },
-                { id: 'post3', title: 'Bel Ağrısının Nedenleri ve Tedavisi', date: '5 Haziran 2025', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=1770&auto=format&fit=crop', summary: 'Kronik bel ağrısının altında yatan sebepleri ve fizyoterapinin bu konudaki rolünü keşfedin.', fullContent: `<p>Bel ağrısı, toplumda en sık görülen şikayetlerden biridir. Kötü postür, ağır kaldırma veya hareketsiz yaşam tarzı gibi birçok nedeni olabilir. Fizyoterapi, bel ağrısı tedavisinde kişiye özel egzersiz programları ve manuel terapi teknikleri ile oldukça etkilidir.</p>` }
-            ];
+            const ADMIN_PASSWORD = 'admin';
+            let quill;
+            let postToDeleteId = null; 
+            
+            const blogStorageKey = 'fztNeseBlogPosts';
+            let allBlogPosts = [];
 
-            let userBlogPosts = JSON.parse(localStorage.getItem('myBlogPosts')) || [];
-            let allBlogPosts = [...initialBlogPosts, ...userBlogPosts].sort((a, b) => new Date(b.date) - new Date(a.date));
+            function savePosts() {
+                localStorage.setItem(blogStorageKey, JSON.stringify(allBlogPosts));
+            }
 
+            function loadPosts() {
+                const storedPosts = localStorage.getItem(blogStorageKey);
+                if (!storedPosts) {
+                    const initialBlogPosts = [
+                        { id: 'post1', title: 'Ofis Çalışanları İçin 5 Basit Egzersiz', date: '15 Haziran 2025', image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=1820&auto=format&fit=crop', summary: 'Masa başında geçen uzun saatlerin getirdiği ağrıları önlemek için yapabileceğiniz kolay ve etkili hareketler.', fullContent: `<p>Günümüzün büyük bir kısmını ofiste, masa başında oturarak geçiriyoruz. Bu durum, zamanla boyun, sırt ve bel ağrılarına neden olabilir. Ancak endişelenmeyin, gün içinde yapacağınız birkaç basit egzersizle bu ağrıların önüne geçebilirsiniz.</p><h3 class="text-xl font-bold mt-4">1. Boyun Esnetme</h3><p>Başınızı yavaşça sağ omzunuza doğru eğin ve 5 saniye bekleyin. Aynı hareketi sol taraf için de tekrarlayın. Bu, boyun kaslarınızı rahatlatacaktır.</p><h3 class="text-xl font-bold mt-4">2. Omuz Çevirme</h3><p>Omuzlarınızı kulaklarınıza doğru kaldırıp yavaşça geriye doğru dairesel hareketlerle çevirin. Bu hareketi 10 kez tekrarlayın.</p><p>Bu basit hareketler, kan dolaşımınızı artırarak daha enerjik hissetmenize yardımcı olacaktır.</p>` },
+                        { id: 'post2', title: 'Spor Yaralanmalarından Nasıl Korunulur?', date: '10 Haziran 2025', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=1770&auto=format&fit=crop', summary: 'Isınma, soğuma ve doğru antrenman teknikleri ile sakatlanma riskini en aza indirin.', fullContent: `<p>Spor yapmak sağlıklıdır ancak doğru yapılmadığında yaralanmalara yol açabilir. Isınma ve soğuma egzersizleri, sakatlanma riskini önemli ölçüde azaltır. Antrenman öncesi 10-15 dakika dinamik esneme hareketleri yapmayı unutmayın.</p>` },
+                        { id: 'post3', title: 'Bel Ağrısının Nedenleri ve Tedavisi', date: '5 Haziran 2025', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=1770&auto=format&fit=crop', summary: 'Kronik bel ağrısının altında yatan sebepleri ve fizyoterapinin bu konudaki rolünü keşfedin.', fullContent: `<p>Bel ağrısı, toplumda en sık görülen şikayetlerden biridir. Kötü postür, ağır kaldırma veya hareketsiz yaşam tarzı gibi birçok nedeni olabilir. Fizyoterapi, bel ağrısı tedavisinde kişiye özel egzersiz programları ve manuel terapi teknikleri ile oldukça etkilidir.</p>` }
+                    ];
+                    allBlogPosts = initialBlogPosts;
+                    savePosts();
+                } else {
+                    allBlogPosts = JSON.parse(storedPosts);
+                }
+                allBlogPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
+            }
+
+            // --- Element Seçicileri ---
             const blogContainer = document.getElementById('blog-container');
-
+            const pageLinks = document.querySelectorAll('.page-link');
+            const pages = document.querySelectorAll('.page');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const modals = document.querySelectorAll('.modal, .admin-panel-base');
+            const adminPanel = document.getElementById('admin-panel');
+            const addPostForm = document.getElementById('add-post-form');
+            const passwordModal = document.getElementById('password-modal');
+            const adminMenuModal = document.getElementById('admin-menu-modal');
+            const editPostPanel = document.getElementById('edit-post-panel');
+            const deletePostPanel = document.getElementById('delete-post-panel');
+            const confirmationModal = document.getElementById('confirmation-modal');
+            
+            // --- Blog Gönderilerini Ekrana Çizme ---
             function renderBlogPosts() {
                 blogContainer.innerHTML = '';
                 allBlogPosts.forEach(post => {
@@ -273,13 +412,7 @@
                 });
             }
             
-            // --- Navigation & Page Handling ---
-            const pageLinks = document.querySelectorAll('.page-link');
-            const pages = document.querySelectorAll('.page');
-            const navLinks = document.querySelectorAll('.nav-link');
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
-
+            // --- Genel Sayfa ve Navigasyon Yönetimi ---
             function showPage(pageId) {
                 pages.forEach(page => page.style.display = 'none');
                 const targetPage = document.getElementById(pageId);
@@ -287,111 +420,214 @@
                 window.scrollTo(0, 0);
                 navLinks.forEach(link => { link.classList.remove('active'); if(link.hash === '#' + pageId) link.classList.add('active'); });
             }
-
             pageLinks.forEach(link => { link.addEventListener('click', function(e) { e.preventDefault(); showPage(this.hash.substring(1)); mobileMenu.classList.add('hidden'); }); });
             mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
-            
             document.getElementById('year').textContent = new Date().getFullYear();
 
-            // --- Forms ---
-            // DÜZENLENMİŞ FORM GÖNDERME KISMI
-            const appointmentForm = document.getElementById('appointment-form');
-            const formStatus = document.getElementById('form-status');
-            const submitBtn = document.getElementById('form-submit-btn');
-
-            appointmentForm.addEventListener('submit', async function (e) {
-                e.preventDefault();
-                const data = new FormData(appointmentForm);
-                
-                submitBtn.disabled = true;
-                submitBtn.textContent = "Gönderiliyor...";
-                formStatus.textContent = "";
-
-                try {
-                    const response = await fetch(appointmentForm.action, {
-                        method: appointmentForm.method,
-                        body: data,
-                        headers: {
-                            'Accept': 'application/json'
-                        }
-                    });
-
-                    if (response.ok) {
-                        formStatus.textContent = "Teşekkürler! Randevu talebiniz alınmıştır.";
-                        formStatus.className = "text-center mt-4 text-green-600";
-                        appointmentForm.reset();
-                    } else {
-                        const responseData = await response.json();
-                        if (Object.hasOwn(responseData, 'errors')) {
-                            formStatus.textContent = responseData["errors"].map(error => error["message"]).join(", ");
-                        } else {
-                            formStatus.textContent = "Bir hata oluştu, lütfen tekrar deneyin.";
-                        }
-                         formStatus.className = "text-center mt-4 text-red-600";
-                    }
-                } catch (error) {
-                    formStatus.textContent = "Bir hata oluştu, lütfen tekrar deneyin.";
-                    formStatus.className = "text-center mt-4 text-red-600";
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = "Randevu Talebi Gönder";
-                }
+            // --- Modalları ve Panelleri Kapatma ---
+            function hideAllModals() {
+                modals.forEach(m => m.style.display = 'none');
+            }
+            document.querySelectorAll('.close-button').forEach(button => {
+                button.addEventListener('click', hideAllModals);
             });
+            document.getElementById('close-admin-panel').addEventListener('click', hideAllModals);
+            document.getElementById('cancel-delete-btn').addEventListener('click', hideAllModals);
 
-            // --- Blog Modal ---
-            const modal = document.getElementById('blog-modal');
-            const closeModalButton = document.getElementById('close-modal-button');
+
+            // --- Blog Okuma Modalı ---
+            const blogModal = document.getElementById('blog-modal');
             blogContainer.addEventListener('click', function(e) {
                 const button = e.target.closest('.read-more-btn');
                 if (button) {
-                    const postId = button.dataset.postid;
-                    const post = allBlogPosts.find(p => p.id === postId);
+                    const post = allBlogPosts.find(p => p.id === button.dataset.postid);
                     if (post) {
                         document.getElementById('modal-title').innerText = post.title;
                         document.getElementById('modal-date').innerText = post.date;
                         document.getElementById('modal-image').src = post.image;
                         document.getElementById('modal-body').innerHTML = post.fullContent;
-                        modal.style.display = "block";
+                        blogModal.style.display = "block";
                     }
                 }
             });
-            closeModalButton.onclick = () => modal.style.display = "none";
-            window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; }
 
-            // --- Admin Panel ---
-            const adminPanel = document.getElementById('admin-panel');
-            const addPostForm = document.getElementById('add-post-form');
-            const closeAdminPanelButton = document.getElementById('close-admin-panel');
+            // --- Admin & Şifre Paneli Mantığı ---
+            function initializeQuill() {
+                if (!quill) {
+                    quill = new Quill('#post-editor', {
+                        modules: { toolbar: [[{ 'header': [1, 2, 3, false] }], ['bold', 'italic', 'underline'], [{ 'list': 'ordered'}, { 'list': 'bullet' }], [{ 'color': [] }, { 'background': [] }], ['clean']] },
+                        placeholder: 'Yazınızı buraya yazın...',
+                        theme: 'snow'
+                    });
+                }
+            }
             
             document.addEventListener('keydown', (e) => {
-                if (e.ctrlKey && e.shiftKey && e.key === 'P') {
+                if (e.ctrlKey && e.shiftKey && e.key.toUpperCase() === 'P') {
                     e.preventDefault();
-                    adminPanel.style.display = adminPanel.style.display === 'block' ? 'none' : 'block';
+                    hideAllModals();
+                    passwordModal.style.display = 'block';
+                    document.getElementById('password-input').focus();
                 }
             });
 
-            closeAdminPanelButton.addEventListener('click', () => { adminPanel.style.display = 'none'; });
-
-            addPostForm.addEventListener('submit', (e) => {
+            document.getElementById('password-form').addEventListener('submit', (e) => {
                 e.preventDefault();
-                const newPost = {
-                    id: 'post' + Date.now(),
-                    title: document.getElementById('post-title').value,
-                    date: new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric'}),
-                    image: document.getElementById('post-image').value,
-                    summary: document.getElementById('post-summary').value,
-                    fullContent: document.getElementById('post-fullContent').value
-                };
-                userBlogPosts.push(newPost);
-                allBlogPosts = [...initialBlogPosts, ...userBlogPosts].sort((a, b) => new Date(b.date) - new Date(a.date));
-                localStorage.setItem('myBlogPosts', JSON.stringify(userBlogPosts));
-                renderBlogPosts();
-                addPostForm.reset();
-                adminPanel.style.display = 'none';
-                alert('Yeni blog yazısı başarıyla eklendi!');
+                if (document.getElementById('password-input').value === ADMIN_PASSWORD) {
+                    hideAllModals();
+                    adminMenuModal.style.display = 'block';
+                } else {
+                    showNotification('Hatalı şifre! Erişim reddedildi.', true);
+                }
+                document.getElementById('password-input').value = '';
             });
 
-            // --- Initial Load ---
+            // --- Yönetim Menüsü Butonları ---
+            document.getElementById('open-create-panel-btn').addEventListener('click', () => {
+                hideAllModals();
+                addPostForm.reset();
+                document.getElementById('post-id-input').value = '';
+                document.getElementById('admin-panel-title').innerText = 'Yeni Blog Yazısı Ekle';
+                document.getElementById('form-submit-button').innerText = 'Yazıyı Ekle';
+                initializeQuill();
+                quill.setText('');
+                adminPanel.style.display = 'block';
+            });
+
+            document.getElementById('open-edit-panel-btn').addEventListener('click', () => {
+                hideAllModals();
+                renderPostsForEditing();
+                editPostPanel.style.display = 'block';
+            });
+
+            document.getElementById('open-delete-panel-btn').addEventListener('click', () => {
+                hideAllModals();
+                renderPostsForDeletion();
+                deletePostPanel.style.display = 'block';
+            });
+
+            // --- Blog Düzenleme Mantığı ---
+            function renderPostsForEditing() {
+                const listContainer = document.getElementById('edit-post-list');
+                listContainer.innerHTML = '';
+                allBlogPosts.forEach(post => {
+                    const item = document.createElement('div');
+                    item.className = 'flex justify-between items-center p-3 bg-gray-50 rounded-lg';
+                    item.innerHTML = `
+                        <span class="truncate pr-4">${post.title}</span>
+                        <button data-postid="${post.id}" class="edit-post-btn btn btn-sm btn-primary !px-4 !py-2">Düzenle</button>
+                    `;
+                    listContainer.appendChild(item);
+                });
+            }
+
+            document.getElementById('edit-post-list').addEventListener('click', (e) => {
+                if (e.target.classList.contains('edit-post-btn')) {
+                    const postId = e.target.dataset.postid;
+                    const postToEdit = allBlogPosts.find(p => p.id === postId);
+                    if (postToEdit) {
+                        hideAllModals();
+                        addPostForm.reset();
+                        document.getElementById('post-id-input').value = postToEdit.id;
+                        document.getElementById('post-title').value = postToEdit.title;
+                        document.getElementById('post-image').value = postToEdit.image;
+                        document.getElementById('post-summary').value = postToEdit.summary;
+                        document.getElementById('admin-panel-title').innerText = 'Blog Yazısını Güncelle';
+                        document.getElementById('form-submit-button').innerText = 'Yazıyı Güncelle';
+                        
+                        initializeQuill();
+                        quill.root.innerHTML = postToEdit.fullContent;
+                        
+                        adminPanel.style.display = 'block';
+                    }
+                }
+            });
+
+            // --- Blog Silme Mantığı ---
+            function renderPostsForDeletion() {
+                const listContainer = document.getElementById('delete-post-list');
+                listContainer.innerHTML = '';
+                allBlogPosts.forEach(post => {
+                    const item = document.createElement('div');
+                    item.className = 'flex justify-between items-center p-3 bg-gray-50 rounded-lg';
+                    item.innerHTML = `
+                        <span class="truncate pr-4">${post.title}</span>
+                        <button data-postid="${post.id}" class="delete-post-btn btn btn-sm !border-red-500 !text-red-500 hover:!bg-red-50 !px-4 !py-2">Sil</button>
+                    `;
+                    listContainer.appendChild(item);
+                });
+            }
+
+            document.getElementById('delete-post-list').addEventListener('click', (e) => {
+                if (e.target.classList.contains('delete-post-btn')) {
+                    postToDeleteId = e.target.dataset.postid;
+                    confirmationModal.style.display = 'block';
+                }
+            });
+            
+            document.getElementById('confirm-delete-btn').addEventListener('click', () => {
+                if (postToDeleteId) {
+                    allBlogPosts = allBlogPosts.filter(p => p.id !== postToDeleteId);
+                    savePosts();
+                    renderBlogPosts();
+                    renderPostsForDeletion();
+                    hideAllModals();
+                    showNotification('Yazı başarıyla silindi.', false);
+                    postToDeleteId = null; 
+                }
+            });
+            
+            // --- Yazı Ekleme/Güncelleme Formu ---
+            addPostForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const editingPostId = document.getElementById('post-id-input').value;
+
+                if (editingPostId) { // Güncelleme
+                    const postIndex = allBlogPosts.findIndex(p => p.id === editingPostId);
+                    if(postIndex > -1){
+                         const updatedPost = {
+                            ...allBlogPosts[postIndex],
+                            title: document.getElementById('post-title').value,
+                            image: document.getElementById('post-image').value,
+                            summary: document.getElementById('post-summary').value,
+                            fullContent: quill.root.innerHTML
+                        };
+                        allBlogPosts[postIndex] = updatedPost;
+                    }
+                } else { // Oluşturma
+                    const newPost = {
+                        id: 'post' + Date.now(),
+                        title: document.getElementById('post-title').value,
+                        date: new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric'}),
+                        image: document.getElementById('post-image').value,
+                        summary: document.getElementById('post-summary').value,
+                        fullContent: quill.root.innerHTML
+                    };
+                    allBlogPosts.push(newPost);
+                }
+                
+                savePosts();
+                renderBlogPosts();
+                hideAllModals();
+                showNotification(`Yazı başarıyla ${editingPostId ? 'güncellendi' : 'eklendi'}.`, false);
+            });
+
+            // --- Yardımcı Fonksiyonlar ---
+            function showNotification(message, isError = false) {
+                const notification = document.createElement('div');
+                notification.textContent = message;
+                notification.className = 'notification';
+                notification.style.backgroundColor = isError ? '#ef4444' : '#22c55e';
+                document.body.appendChild(notification);
+                setTimeout(() => { notification.classList.add('show'); }, 10);
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    setTimeout(() => { if(document.body.contains(notification)) document.body.removeChild(notification); }, 300);
+                }, 3000);
+            }
+
+            // --- İlk Yükleme ---
+            loadPosts();
             renderBlogPosts();
             showPage('home');
         });
