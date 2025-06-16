@@ -329,15 +329,14 @@
         
         // ÖNEMLİ: Kendi Firebase projenizin bilgilerini buraya yapıştırın.
         const firebaseConfig = {
-  apiKey: "AIzaSyDOiyE7rwCnzrnm0gOWmJjhfWdCEOsVmLA",
-  authDomain: "fzt-nese-tas.firebaseapp.com",
-  projectId: "fzt-nese-tas",
-  storageBucket: "fzt-nese-tas.firebasestorage.app",
-  messagingSenderId: "804311305704",
-  appId: "1:804311305704:web:a23df4fa52273349b4a85d",
-  measurementId: "G-TTKVLE8KVH"
-};
-
+            apiKey: "AIzaSyDOiyE7rwCnzrnm0gOWmJjhfWdCEOsVmLA",
+            authDomain: "fzt-nese-tas.firebaseapp.com",
+            projectId: "fzt-nese-tas",
+            storageBucket: "fzt-nese-tas.appspot.com",
+            messagingSenderId: "804311305704",
+            appId: "1:804311305704:web:a23df4fa52273349b4a85d",
+            measurementId: "G-TTKVLE8KVH"
+        };
 
         // --- App Initialization ---
         const app = initializeApp(firebaseConfig);
@@ -377,13 +376,8 @@
                 theme: 'snow'
             });
 
-            const quillLimit = 10000;
-            const counter = getEl('post-editor-counter');
             quill.on('text-change', () => {
-                const length = quill.getLength() - 1;
-                counter.textContent = `${length} / ${quillLimit}`;
-                counter.classList.toggle('limit-exceeded', length > quillLimit);
-                if (length > quillLimit) quill.deleteText(quillLimit, length);
+                updateQuillCounter();
             });
         }
         
@@ -439,13 +433,23 @@
             ];
 
             for (const seed of collectionsToSeed) {
-                const checkDoc = await getDocs(seed.ref);
-                if(checkDoc.empty) {
-                     if(Array.isArray(seed.data)){
-                        for (const item of seed.data) await addDoc(seed.ref, item);
-                     } else {
-                        await setDoc(doc(seed.ref, seed.docId), seed.data);
-                     }
+                try {
+                    const docRef = seed.docId ? doc(seed.ref, seed.docId) : null;
+                    if (docRef) { // Single document seeding
+                        const docSnap = await getDoc(docRef);
+                        if (!docSnap.exists()) {
+                            await setDoc(docRef, seed.data);
+                        }
+                    } else { // Collection seeding
+                        const querySnapshot = await getDocs(seed.ref);
+                        if (querySnapshot.empty) {
+                            for (const item of seed.data) {
+                                await addDoc(seed.ref, item);
+                            }
+                        }
+                    }
+                } catch(e) {
+                    console.error("Error seeding data for ", seed, e);
                 }
             }
         }
@@ -684,7 +688,9 @@
         // --- Character Counter Setup ---
         function setupCharCounter(elementId) {
             const input = getEl(elementId);
+            if (!input) return; 
             const counter = getEl(`${elementId}-counter`);
+            if (!counter) return; 
             const maxLength = input.maxLength;
             
             const updateCounter = () => {
@@ -694,6 +700,16 @@
             };
             input.addEventListener('input', updateCounter);
             updateCounter();
+        }
+        
+        // DÜZELTME: Bu fonksiyonun tamamı güncellendi
+        function updateQuillCounter() {
+            if (!quill) return;
+            const counter = getEl('post-editor-counter');
+            const length = quill.getLength() - 1;
+            const quillLimit = 10000;
+            counter.textContent = `${length} / ${quillLimit}`;
+            counter.classList.toggle('limit-exceeded', length > quillLimit);
         }
 
         // --- Page Content Edit Panels ---
@@ -717,10 +733,10 @@
                          getEl('edit-about-image').value = data.image;
                          const expContainer = getEl('experiences-list-editor');
                          expContainer.innerHTML = '';
-                         data.experiences.forEach(item => createDynamicListItem(expContainer, item, 'experience'));
+                         data.experiences.forEach(item => createDynamicListItem(expContainer, item));
                          const eduContainer = getEl('educations-list-editor');
                          eduContainer.innerHTML = '';
-                         data.educations.forEach(item => createDynamicListItem(eduContainer, item, 'education'));
+                         data.educations.forEach(item => createDynamicListItem(eduContainer, item));
                     } else if (pageName === 'contact') {
                          getEl('edit-contact-phone').value = data.phone;
                          getEl('edit-contact-email').value = data.email;
@@ -732,7 +748,9 @@
                 console.error("Error getting page content:", error);
             }
             
-            panel.querySelectorAll('input, textarea').forEach(el => setupCharCounter(el.id));
+            panel.querySelectorAll('input, textarea').forEach(el => {
+                if(el.id) setupCharCounter(el.id);
+            });
             panel.style.display = 'block';
         }
         
@@ -843,6 +861,7 @@
                  quill.setText('');
             }
             ['post-title', 'post-image', 'post-summary'].forEach(setupCharCounter);
+            updateQuillCounter();
             getEl('admin-panel').style.display = 'block';
         }
         getEl('add-post-form').addEventListener('submit', async e => {
