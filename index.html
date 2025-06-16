@@ -72,6 +72,7 @@
         #admin-panel .ql-toolbar.ql-snow:focus-within { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(0, 150, 136, 0.1); border-bottom-color: var(--border-color);}
         .whatsapp-fab { position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; background-color: #25D366; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 100; transition: transform 0.2s ease-in-out; }
         .whatsapp-fab:hover { transform: scale(1.1); }
+        .skeleton { background-color: #e5e7eb; border-radius: 0.375rem; }
     </style>
 </head>
 <body>
@@ -107,9 +108,9 @@
         <section id="home" class="page">
             <div class="container mx-auto px-6 py-24 md:py-32 flex flex-col md:flex-row items-center gap-12">
                 <div class="md:w-1/2 text-center md:text-left">
-                    <span id="home-subtitle" class="font-semibold text-primary uppercase tracking-wider"></span>
-                    <h1 id="home-title" class="text-4xl md:text-6xl font-extrabold text-text-color-dark mt-4 mb-6 leading-tight"></h1>
-                    <p id="home-description" class="text-lg text-text-color-light max-w-xl mx-auto md:mx-0 mb-8"></p>
+                    <span id="home-subtitle" class="font-semibold text-primary uppercase tracking-wider skeleton animate-pulse w-1/2 h-5 mb-4 block"></span>
+                    <h1 id="home-title" class="text-4xl md:text-6xl font-extrabold text-text-color-dark mt-4 mb-6 leading-tight skeleton animate-pulse h-24 rounded-lg"></h1>
+                    <p id="home-description" class="text-lg text-text-color-light max-w-xl mx-auto md:mx-0 mb-8 skeleton animate-pulse h-16 rounded-lg"></p>
                     <div class="flex justify-center md:justify-start items-center gap-4">
                         <a href="#appointment" class="btn btn-primary page-link">Randevu Alın</a>
                         <a href="#services" class="btn btn-secondary page-link">Hizmetlerimiz</a>
@@ -117,7 +118,8 @@
                 </div>
                 <div class="md:w-1/2">
                     <div class="card p-2">
-                        <img id="home-image" src="" class="rounded-xl" alt="Modern bir fizyoterapi kliniği">
+                        <div id="home-image-skeleton" class="w-full aspect-video skeleton animate-pulse rounded-xl"></div>
+                        <img id="home-image" src="" class="rounded-xl hidden" alt="Modern bir fizyoterapi kliniği">
                     </div>
                 </div>
             </div>
@@ -126,12 +128,13 @@
         <section id="about" class="page py-24 md:py-32">
              <div class="container mx-auto px-6">
                 <div class="text-center mb-16 max-w-3xl mx-auto">
-                    <h2 id="about-title" class="text-4xl md:text-5xl font-bold text-text-color-dark"></h2>
-                    <p id="about-subtitle" class="text-lg text-text-color-light mt-4"></p>
+                    <h2 id="about-title" class="text-4xl md:text-5xl font-bold text-text-color-dark skeleton animate-pulse h-12 w-3/4 mx-auto rounded-lg"></h2>
+                    <p id="about-subtitle" class="text-lg text-text-color-light mt-4 skeleton animate-pulse h-8 w-full mx-auto rounded-lg"></p>
                 </div>
                 <div class="grid md:grid-cols-2 gap-12 items-center">
                      <div class="card p-2">
-                         <img id="about-image" src="" alt="Fizyoterapist Neşe Taş" class="rounded-xl w-full h-full object-cover">
+                        <div id="about-image-skeleton" class="w-full aspect-square skeleton animate-pulse rounded-xl"></div>
+                         <img id="about-image" src="" alt="Fizyoterapist Neşe Taş" class="rounded-xl w-full h-full object-cover hidden">
                      </div>
                      <div class="space-y-8">
                          <div class="card p-8"><h3 class="text-3xl font-bold text-text-color-dark mb-4">Deneyimlerim</h3><ul id="about-experiences" class="space-y-4"></ul></div>
@@ -160,7 +163,7 @@
                  <div class="text-center mb-16 max-w-3xl mx-auto"><h2 class="text-4xl md:text-5xl font-bold text-text-color-dark">İletişimde Kalalım</h2><p class="text-lg text-text-color-light mt-4">Sorularınız, önerileriniz veya randevu talepleriniz için bize ulaşmaktan çekinmeyin.</p></div>
                  <div class="card p-8 md:p-12 flex flex-col lg:flex-row gap-12">
                      <div class="lg:w-1/2"><h3 class="text-3xl font-bold mb-6 text-text-color-dark">İletişim Bilgileri</h3><div class="space-y-6 text-lg text-gray-700"><p class="flex items-start"><i class="fas fa-map-marker-alt mt-1 mr-4 text-primary"></i><span id="contact-address"></span></p><p class="flex items-center"><i class="fas fa-phone mr-4 text-primary"></i><a id="contact-phone" href="" class="hover:text-primary"></a></p><p class="flex items-center"><i class="fas fa-envelope mr-4 text-primary"></i><a id="contact-email" href="" class="hover:text-primary"></a></p></div></div>
-                     <div id="map-container" class="lg:w-1/2 min-h-[300px] lg:min-h-full rounded-xl overflow-hidden"></div>
+                     <div id="map-container" class="lg:w-1/2 min-h-[300px] lg:min-h-full rounded-xl overflow-hidden skeleton animate-pulse"></div>
                  </div>
              </div>
         </section>
@@ -326,14 +329,15 @@
         
         // ÖNEMLİ: Kendi Firebase projenizin bilgilerini buraya yapıştırın.
         const firebaseConfig = {
-            apiKey: "AIzaSyDOiyE7rwCnzrnm0gOWmJjhfWdCEOsVmLA",
-            authDomain: "fzt-nese-tas.firebaseapp.com",
-            projectId: "fzt-nese-tas",
-            storageBucket: "fzt-nese-tas.firebasestorage.app",
-            messagingSenderId: "804311305704",
-            appId: "1:804311305704:web:a23df4fa52273349b4a85d",
-            measurementId: "G-TTKVLE8KVH"
-        };
+  apiKey: "AIzaSyDOiyE7rwCnzrnm0gOWmJjhfWdCEOsVmLA",
+  authDomain: "fzt-nese-tas.firebaseapp.com",
+  projectId: "fzt-nese-tas",
+  storageBucket: "fzt-nese-tas.firebasestorage.app",
+  messagingSenderId: "804311305704",
+  appId: "1:804311305704:web:a23df4fa52273349b4a85d",
+  measurementId: "G-TTKVLE8KVH"
+};
+
 
         // --- App Initialization ---
         const app = initializeApp(firebaseConfig);
@@ -416,22 +420,21 @@
         async function seedInitialData() {
             const collectionsToSeed = [
                 { ref: postsCollection, data: [
-                    { title: 'Ofis Çalışanları İçin 5 Basit Egzersiz', date: new Date('2025-06-15T12:00:00Z'), image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=1820&auto=format&fit=crop', summary: 'Masa başında geçen uzun saatlerin getirdiği ağrıları önlemek için yapabileceğiniz kolay ve etkili hareketler.', fullContent: `<p>...</p>` }
+                    { title: 'Ofis Çalışanları İçin 5 Basit Egzersiz', date: new Date('2025-06-15T12:00:00Z'), image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=1820&auto=format&fit=crop', summary: '...', fullContent: `<p>...</p>` }
                 ]},
                 { ref: servicesCollection, data: [
-                    { title: 'Fizyoterapi', description: 'Kişiye özel değerlendirme ve tedavi programları ile fonksiyonel kapasitenizi en üst düzeye çıkarıyoruz.', icon: 'fas fa-running' },
-                    { title: 'Manuel Terapi', description: 'Sadece ellerle uygulanan özel mobilizasyon ve manipülasyon teknikleri ile ağrılarınıza son veriyoruz.', icon: 'fas fa-hands-helping' },
+                    { title: 'Fizyoterapi', description: '...', icon: 'fas fa-running' }
                 ]},
                 { ref: pageContentCollection, docId: 'home', data: {
-                    subtitle: 'Fizyoterapi & Sağlıklı Yaşam', title: 'Hareketin İyileştirici Gücünü Keşfedin.', description: 'Kişiye özel fizyoterapi çözümleriyle ağrılarınıza veda edin, yaşam kalitenizi artırın.', image: 'https://images.pexels.com/photos/4046655/pexels-photo-4046655.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+                    subtitle: 'Fizyoterapi & Sağlıklı Yaşam', title: 'Hareketin İyileştirici Gücünü Keşfedin.', description: '...', image: 'https://images.pexels.com/photos/4046655/pexels-photo-4046655.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
                 }},
                 { ref: pageContentCollection, docId: 'about', data: {
-                    title: 'Fizyoterapist Neşe Taş', subtitle: 'İnsana ve harekete olan tutkumla çıktığım profesyonel yolculuğum.', image: 'https://images.pexels.com/photos/3912981/pexels-photo-3912981.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+                    title: 'Fizyoterapist Neşe Taş', subtitle: 'İnsana ve harekete olan tutkumla...', image: 'https://images.pexels.com/photos/3912981/pexels-photo-3912981.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
                     experiences: [{title: '[Hastane/Klinik Adı]', subtitle: 'Fizyoterapist (2020-Günümüz)'}],
                     educations: [{title: '[Üniversite Adı]', subtitle: 'Lisans'}, {title: 'Klinik Pilates Eğitmenliği', subtitle: 'Sertifika'}]
                 }},
                  { ref: pageContentCollection, docId: 'contact', data: {
-                    phone: '+90 (542) 452 88 03', email: 'info@fztnesetas.com', address: 'Barbaros, Ak Zambak Sok. Varyap Meridian A Blok No2 kat 39 daire319, 34746 Ataşehir/İstanbul, Türkiye', mapIframe: '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6022.535625749074!2d29.099185048206603!3d40.99751108540818!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14cac882ab345d37%3A0x9b4a2af9b2b902cf!2sVaryap%20Meridian%20A%20BLOK!5e0!3m2!1str!2sca!4v1750095719858!5m2!1str!2sca" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>'
+                    phone: '+90 (542) 452 88 03', email: 'info@fztnesetas.com', address: 'Barbaros, Ak Zambak Sok. ...', mapIframe: '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6022.535625749074!2d29.099185048206603!3d40.99751108540818!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14cac882ab345d37%3A0x9b4a2af9b2b902cf!2sVaryap%20Meridian%20A%20BLOK!5e0!3m2!1str!2sca!4v1750095719858!5m2!1str!2sca" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>'
                 }}
             ];
 
@@ -471,6 +474,9 @@
                     getEl('home-title').textContent = data.title;
                     getEl('home-description').textContent = data.description;
                     getEl('home-image').src = data.image;
+                    getEl('home-image').classList.remove('hidden');
+                    getEl('home-image-skeleton').classList.add('hidden');
+                    ['home-subtitle', 'home-title', 'home-description'].forEach(id => getEl(id).classList.remove('skeleton', 'animate-pulse', 'h-5', 'h-24', 'h-16', 'w-1/2', 'rounded-lg'));
                 }
             });
             onSnapshot(doc(pageContentCollection, 'about'), (doc) => {
@@ -479,6 +485,10 @@
                     getEl('about-title').textContent = data.title;
                     getEl('about-subtitle').textContent = data.subtitle;
                     getEl('about-image').src = data.image;
+                    getEl('about-image').classList.remove('hidden');
+                    getEl('about-image-skeleton').classList.add('hidden');
+                     ['about-title', 'about-subtitle'].forEach(id => getEl(id).classList.remove('skeleton', 'animate-pulse', 'h-12', 'h-8', 'w-3/4', 'w-full', 'mx-auto', 'rounded-lg'));
+
                     const expContainer = getEl('about-experiences');
                     expContainer.innerHTML = '';
                     data.experiences?.forEach(item => {
@@ -502,6 +512,7 @@
                     emailEl.href = `mailto:${data.email}`;
                     getEl('contact-address').textContent = data.address;
                     getEl('map-container').innerHTML = data.mapIframe;
+                     getEl('map-container').classList.remove('skeleton', 'animate-pulse');
                 }
             });
         }
