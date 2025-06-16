@@ -21,105 +21,48 @@
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
     <style>
-        /* Mesh Gradyan Tasarım için Stiller */
         body {
             font-family: 'Poppins', sans-serif;
             color: #374151;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            
             background-color: #fdfdff;
-            background-image: 
-                radial-gradient(at 5% 10%, hsla(339, 71%, 91%, 0.35) 0px, transparent 50%),
-                radial-gradient(at 95% 90%, hsla(174, 100%, 29%, 0.2) 0px, transparent 50%),
-                radial-gradient(at 50% 50%, hsla(0, 0%, 100%, 0.5) 0px, transparent 40%);
+            background-image: radial-gradient(at 5% 10%, hsla(339, 71%, 91%, 0.35) 0px, transparent 50%), radial-gradient(at 95% 90%, hsla(174, 100%, 29%, 0.2) 0px, transparent 50%), radial-gradient(at 50% 50%, hsla(0, 0%, 100%, 0.5) 0px, transparent 40%);
             background-attachment: fixed;
         }
-
-        /* Renkler */
         :root {
-            --primary-color: #009688;
-            --primary-color-light: #00bfa5;
-            --text-color-dark: #1f2937;
-            --text-color-light: #6b7280;
-            --bg-light: #ffffff;
-            --border-color: #e5e7eb;
+            --primary-color: #009688; --primary-color-light: #00bfa5; --text-color-dark: #1f2937; --text-color-light: #6b7280; --bg-light: #ffffff; --border-color: #e5e7eb;
         }
-        
-        /* Animasyonlar */
         .page { display: none; animation: fadeInUp 0.6s ease-in-out; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Modal Stilleri */
         .modal { display: none; position: fixed; z-index: 201; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .modal-content { background-color: var(--bg-light); margin: 10% auto; padding: 2rem; border-radius: 12px; width: 90%; animation: scaleUp 0.4s ease-out; }
-        @keyframes scaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-content { background-color: var(--bg-light); margin: 5% auto; padding: 2rem; border-radius: 12px; width: 90%; animation: scaleUp 0.4s ease-out; }
         .close-button { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; transition: color 0.2s; }
         .close-button:hover, .close-button:focus { color: var(--text-color-dark); }
-
-        /* Buton Stili */
         .btn { padding: 12px 28px; border-radius: 8px; font-weight: 600; transition: all 0.3s ease; display: inline-block; border: none; text-align: center; }
-        .btn-primary { 
-            background-image: linear-gradient(to right, var(--primary-color-light) 0%, var(--primary-color) 51%, var(--primary-color-light) 100%);
-            background-size: 200% auto;
-            color: white; 
-        }
-        .btn-primary:hover { 
-            background-position: right center;
-            transform: translateY(-3px); 
-            box-shadow: 0 4px 15px rgba(0, 150, 136, 0.25);
-        }
-        .btn-primary:disabled {
-            background-image: none;
-            background-color: #9ca3af;
-            cursor: not-allowed;
-        }
+        .btn-primary { background-image: linear-gradient(to right, var(--primary-color-light) 0%, var(--primary-color) 51%, var(--primary-color-light) 100%); background-size: 200% auto; color: white; }
+        .btn-primary:hover { background-position: right center; transform: translateY(-3px); box-shadow: 0 4px 15px rgba(0, 150, 136, 0.25); }
+        .btn-primary:disabled { background-image: none; background-color: #9ca3af; cursor: not-allowed; }
         .btn-secondary { background-color: var(--bg-light); color: var(--primary-color); border: 1px solid var(--border-color); }
         .btn-secondary:hover { background-color: #f3f4f6; border-color: #d1d5db; }
-
-        /* Navigasyon Stili */
         .nav-link { position: relative; color: var(--text-color-light); font-weight: 500; padding: 8px 4px; transition: color 0.3s; }
         .nav-link:hover { color: var(--primary-color); }
         .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -6px; left: 0; background-color: var(--primary-color); transition: width 0.3s ease; }
         .nav-link:hover::after, .nav-link.active::after { width: 100%; }
         .nav-link.active { color: var(--primary-color); }
-
-        /* Form Stilleri */
         .form-input { width: 100%; padding: 14px 16px; border: 1px solid var(--border-color); border-radius: 8px; background-color: #fdfdff; transition: all 0.3s; font-size: 16px; }
         .form-input:focus { outline: none; border-color: var(--primary-color); background-color: white; box-shadow: 0 0 0 3px rgba(0, 150, 136, 0.1); }
         .char-counter { font-size: 0.75rem; color: #6b7280; text-align: right; margin-top: 2px; }
         .char-counter.limit-exceeded { color: #ef4444; font-weight: 600; }
-        
-        /* Admin Paneli Stili */
         .admin-panel-base { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 200; width: 90%; background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
-        #admin-panel, #service-panel { max-width: 700px; }
+        .admin-panel-base-scrollable { max-height: 80vh; overflow-y: auto; }
+        #admin-panel, #service-panel, #home-edit-panel, #about-edit-panel, #contact-edit-panel { max-width: 700px; }
         #edit-post-panel, #delete-post-panel, #edit-service-panel, #delete-service-panel { max-width: 600px; }
-
-        /* Genel Kart Stili */
         .card { background-color: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 16px; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; }
         .card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.08); }
-        
         .text-primary { color: var(--primary-color); }
-
-        /* Bildirim Kutusu Stili */
-        .notification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 24px;
-            border-radius: 8px;
-            z-index: 1001;
-            opacity: 0;
-            transition: opacity 0.3s, top 0.3s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            font-weight: 500;
-            color: white;
-        }
+        .notification { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 12px 24px; border-radius: 8px; z-index: 1001; opacity: 0; transition: opacity 0.3s, top 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1); font-weight: 500; color: white; }
         .notification.show { opacity: 1; top: 40px; }
-        
-        /* Quill Editör Stilleri */
         #editor-container { background-color: #fdfdff; }
         .ql-toolbar.ql-snow { border-radius: 8px 8px 0 0; border-color: var(--border-color); }
         .ql-container.ql-snow { border-radius: 0 0 8px 8px; border-color: var(--border-color); min-height: 150px; font-size: 16px; }
@@ -127,29 +70,8 @@
         #admin-panel .ql-toolbar.ql-snow, #admin-panel .ql-container.ql-snow { transition: all 0.3s; }
         #admin-panel .ql-container.ql-snow:focus-within { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(0, 150, 136, 0.1); }
         #admin-panel .ql-toolbar.ql-snow:focus-within { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(0, 150, 136, 0.1); border-bottom-color: var(--border-color);}
-
-        /* WhatsApp Buton Stili */
-        .whatsapp-fab {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            width: 60px;
-            height: 60px;
-            background-color: #25D366;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            z-index: 100;
-            transition: transform 0.2s ease-in-out;
-        }
-        .whatsapp-fab:hover {
-            transform: scale(1.1);
-        }
-
+        .whatsapp-fab { position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; background-color: #25D366; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 100; transition: transform 0.2s ease-in-out; }
+        .whatsapp-fab:hover { transform: scale(1.1); }
     </style>
 </head>
 <body>
@@ -181,13 +103,13 @@
     </header>
 
     <main class="mb-32 md:mb-48">
-        <!-- Sayfa İçerikleri -->
+        <!-- Home Page Content -->
         <section id="home" class="page">
             <div class="container mx-auto px-6 py-24 md:py-32 flex flex-col md:flex-row items-center gap-12">
                 <div class="md:w-1/2 text-center md:text-left">
-                    <span class="font-semibold text-primary uppercase tracking-wider">Fizyoterapi & Sağlıklı Yaşam</span>
-                    <h1 class="text-4xl md:text-6xl font-extrabold text-text-color-dark mt-4 mb-6 leading-tight">Hareketin İyileştirici Gücünü Keşfedin.</h1>
-                    <p class="text-lg text-text-color-light max-w-xl mx-auto md:mx-0 mb-8">Kişiye özel fizyoterapi çözümleriyle ağrılarınıza veda edin, yaşam kalitenizi artırın.</p>
+                    <span id="home-subtitle" class="font-semibold text-primary uppercase tracking-wider">Fizyoterapi & Sağlıklı Yaşam</span>
+                    <h1 id="home-title" class="text-4xl md:text-6xl font-extrabold text-text-color-dark mt-4 mb-6 leading-tight">Hareketin İyileştirici Gücünü Keşfedin.</h1>
+                    <p id="home-description" class="text-lg text-text-color-light max-w-xl mx-auto md:mx-0 mb-8">Kişiye özel fizyoterapi çözümleriyle ağrılarınıza veda edin, yaşam kalitenizi artırın.</p>
                     <div class="flex justify-center md:justify-start items-center gap-4">
                         <a href="#appointment" class="btn btn-primary page-link">Randevu Alın</a>
                         <a href="#services" class="btn btn-secondary page-link">Hizmetlerimiz</a>
@@ -195,49 +117,54 @@
                 </div>
                 <div class="md:w-1/2">
                     <div class="card p-2">
-                        <img src="https://images.pexels.com/photos/4046655/pexels-photo-4046655.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" class="rounded-xl" alt="Modern bir fizyoterapi kliniği">
+                        <img id="home-image" src="https://images.pexels.com/photos/4046655/pexels-photo-4046655.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" class="rounded-xl" alt="Modern bir fizyoterapi kliniği">
                     </div>
                 </div>
             </div>
         </section>
+        <!-- About Page Content -->
         <section id="about" class="page py-24 md:py-32">
              <div class="container mx-auto px-6">
                 <div class="text-center mb-16 max-w-3xl mx-auto">
-                    <h2 class="text-4xl md:text-5xl font-bold text-text-color-dark">Fizyoterapist Neşe Taş</h2>
-                    <p class="text-lg text-text-color-light mt-4">İnsana ve harekete olan tutkumla çıktığım profesyonel yolculuğum.</p>
+                    <h2 id="about-title" class="text-4xl md:text-5xl font-bold text-text-color-dark">Fizyoterapist Neşe Taş</h2>
+                    <p id="about-subtitle" class="text-lg text-text-color-light mt-4">İnsana ve harekete olan tutkumla çıktığım profesyonel yolculuğum.</p>
                 </div>
                 <div class="grid md:grid-cols-2 gap-12 items-center">
                      <div class="card p-2">
-                         <img src="https://images.pexels.com/photos/3912981/pexels-photo-3912981.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Fizyoterapist Neşe Taş" class="rounded-xl w-full h-full object-cover">
+                         <img id="about-image" src="https://images.pexels.com/photos/3912981/pexels-photo-3912981.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Fizyoterapist Neşe Taş" class="rounded-xl w-full h-full object-cover">
                      </div>
                      <div class="space-y-8">
-                         <div class="card p-8"><h3 class="text-3xl font-bold text-text-color-dark mb-4">Deneyimlerim</h3><ul class="space-y-4"><li class="flex items-start"><i class="fas fa-check-circle text-primary mt-1 mr-3"></i><span><strong>[Hastane/Klinik Adı]</strong> - Fizyoterapist (2020-Günümüz)<br><span class="text-sm text-text-color-light">Kas-iskelet sistemi rehabilitasyonu ve sporcu sağlığı.</span></span></li><li class="flex items-start"><i class="fas fa-check-circle text-primary mt-1 mr-3"></i><span><strong>[Hastane/Klinik Adı]</strong> - Stajyer Fizyoterapist (2019-2020)<br><span class="text-sm text-text-color-light">Nörolojik ve ortopedik rehabilitasyon.</span></span></li></ul></div>
-                         <div class="card p-8"><h3 class="text-3xl font-bold text-text-color-dark mb-4">Eğitim & Sertifikalar</h3><ul class="space-y-4"><li class="flex items-start"><i class="fas fa-graduation-cap text-primary mt-1 mr-3"></i><span><strong>[Üniversite Adı]</strong> - Lisans</span></li><li class="flex items-start"><i class="fas fa-certificate text-primary mt-1 mr-3"></i><span>Klinik Pilates Eğitmenliği</span></li><li class="flex items-start"><i class="fas fa-certificate text-primary mt-1 mr-3"></i><span>Manuel Terapi Kursu</span></li></ul></div>
+                         <div class="card p-8"><h3 class="text-3xl font-bold text-text-color-dark mb-4">Deneyimlerim</h3><ul id="about-experiences" class="space-y-4"></ul></div>
+                         <div class="card p-8"><h3 class="text-3xl font-bold text-text-color-dark mb-4">Eğitim & Sertifikalar</h3><ul id="about-educations" class="space-y-4"></ul></div>
                      </div>
                 </div>
             </div>
         </section>
+        <!-- Services Page Content -->
         <section id="services" class="page py-24 md:py-32">
             <div class="container mx-auto px-6">
                  <div class="text-center mb-16 max-w-3xl mx-auto"><h2 class="text-4xl md:text-5xl font-bold text-text-color-dark">Hizmetlerimiz</h2><p class="text-lg text-text-color-light mt-4">Sağlığınıza giden yolda size özel, modern ve kanıta dayalı çözümler.</p></div>
                  <div id="services-container" class="flex flex-wrap justify-center gap-8"></div>
              </div>
         </section>
+        <!-- Blog Page Content -->
         <section id="blog" class="page py-24 md:py-32">
             <div class="container mx-auto px-6">
                  <div class="text-center mb-16 max-w-3xl mx-auto"><h2 class="text-4xl md:text-5xl font-bold text-text-color-dark">Blog</h2><p class="text-lg text-text-color-light mt-4">Sağlıklı yaşam ve fizyoterapi hakkında güncel, bilgilendirici yazılar.</p></div>
                 <div id="blog-container" class="flex flex-wrap justify-center gap-8"></div>
             </div>
         </section>
+        <!-- Contact Page Content -->
         <section id="contact" class="page py-24 md:py-32">
              <div class="container mx-auto px-6">
                  <div class="text-center mb-16 max-w-3xl mx-auto"><h2 class="text-4xl md:text-5xl font-bold text-text-color-dark">İletişimde Kalalım</h2><p class="text-lg text-text-color-light mt-4">Sorularınız, önerileriniz veya randevu talepleriniz için bize ulaşmaktan çekinmeyin.</p></div>
                  <div class="card p-8 md:p-12 flex flex-col lg:flex-row gap-12">
-                     <div class="lg:w-1/2"><h3 class="text-3xl font-bold mb-6 text-text-color-dark">İletişim Bilgileri</h3><div class="space-y-6 text-lg text-gray-700"><p class="flex items-start"><i class="fas fa-map-marker-alt mt-1 mr-4 text-primary"></i><span>Barbaros, Ak Zambak Sok. Varyap Meridian A Blok No2 kat 39 daire319, 34746 Ataşehir/İstanbul, Türkiye</span></p><p class="flex items-center"><i class="fas fa-phone mr-4 text-primary"></i><a href="tel:+905424528803" class="hover:text-primary">+90 (542) 452 88 03</a></p><p class="flex items-center"><i class="fas fa-envelope mr-4 text-primary"></i><a href="mailto:info@fztnesetas.com" class="hover:text-primary">info@fztnesetas.com</a></p></div></div>
-                     <div class="lg:w-1/2 min-h-[300px] lg:min-h-full rounded-xl overflow-hidden"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6022.535625749074!2d29.099185048206603!3d40.99751108540818!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14cac882ab345d37%3A0x9b4a2af9b2b902cf!2sVaryap%20Meridian%20A%20BLOK!5e0!3m2!1str!2sca!4v1750095719858!5m2!1str!2sca" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+                     <div class="lg:w-1/2"><h3 class="text-3xl font-bold mb-6 text-text-color-dark">İletişim Bilgileri</h3><div class="space-y-6 text-lg text-gray-700"><p class="flex items-start"><i class="fas fa-map-marker-alt mt-1 mr-4 text-primary"></i><span id="contact-address">Barbaros, Ak Zambak Sok. Varyap Meridian A Blok No2 kat 39 daire319, 34746 Ataşehir/İstanbul, Türkiye</span></p><p class="flex items-center"><i class="fas fa-phone mr-4 text-primary"></i><a id="contact-phone" href="tel:+905424528803" class="hover:text-primary">+90 (542) 452 88 03</a></p><p class="flex items-center"><i class="fas fa-envelope mr-4 text-primary"></i><a id="contact-email" href="mailto:info@fztnesetas.com" class="hover:text-primary">info@fztnesetas.com</a></p></div></div>
+                     <div id="map-container" class="lg:w-1/2 min-h-[300px] lg:min-h-full rounded-xl overflow-hidden"></div>
                  </div>
              </div>
         </section>
+        <!-- Appointment Page Content -->
         <section id="appointment" class="page py-24 md:py-32">
             <div class="container mx-auto px-6">
                 <div class="max-w-2xl mx-auto card p-8 md:p-12">
@@ -274,11 +201,19 @@
         </div>
     </div>
     <div id="admin-menu-modal" class="modal">
-        <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-content admin-panel-base-scrollable" style="max-width: 400px;">
             <span class="close-button">&times;</span>
             <h3 class="text-2xl font-bold mb-6 text-center">Yönetim Menüsü</h3>
             <div class="space-y-6">
                 <div>
+                    <h4 class="font-bold text-lg mb-2 text-center text-primary">Sayfa İçerikleri</h4>
+                     <div class="flex flex-col space-y-3">
+                        <button id="open-home-edit-panel-btn" class="w-full btn btn-secondary">Anasayfa Düzenle</button>
+                        <button id="open-about-edit-panel-btn" class="w-full btn btn-secondary">Hakkımda Düzenle</button>
+                        <button id="open-contact-edit-panel-btn" class="w-full btn btn-secondary">İletişim Düzenle</button>
+                    </div>
+                </div>
+                <div class="border-t pt-6">
                     <h4 class="font-bold text-lg mb-2 text-center text-primary">Blog Yönetimi</h4>
                     <div class="flex flex-col space-y-3">
                         <button id="open-create-panel-btn" class="w-full btn btn-primary">Blog Yazısı Oluştur</button>
@@ -297,26 +232,10 @@
             </div>
         </div>
     </div>
-    <div id="edit-post-panel" class="admin-panel-base">
-        <span class="close-button">&times;</span>
-        <h3 class="text-2xl font-bold mb-4">Yazı Düzenle</h3>
-        <div id="edit-post-list" class="max-h-96 overflow-y-auto space-y-3"></div>
-    </div>
-    <div id="delete-post-panel" class="admin-panel-base">
-        <span class="close-button">&times;</span>
-        <h3 class="text-2xl font-bold mb-4">Yazı Sil</h3>
-        <div id="delete-post-list" class="max-h-96 overflow-y-auto space-y-3"></div>
-    </div>
-    <div id="edit-service-panel" class="admin-panel-base">
-        <span class="close-button">&times;</span>
-        <h3 class="text-2xl font-bold mb-4">Hizmet Düzenle</h3>
-        <div id="edit-service-list" class="max-h-96 overflow-y-auto space-y-3"></div>
-    </div>
-    <div id="delete-service-panel" class="admin-panel-base">
-        <span class="close-button">&times;</span>
-        <h3 class="text-2xl font-bold mb-4">Hizmet Sil</h3>
-        <div id="delete-service-list" class="max-h-96 overflow-y-auto space-y-3"></div>
-    </div>
+    <div id="edit-post-panel" class="admin-panel-base admin-panel-base-scrollable"><span class="close-button">&times;</span><h3 class="text-2xl font-bold mb-4">Yazı Düzenle</h3><div id="edit-post-list" class="space-y-3"></div></div>
+    <div id="delete-post-panel" class="admin-panel-base admin-panel-base-scrollable"><span class="close-button">&times;</span><h3 class="text-2xl font-bold mb-4">Yazı Sil</h3><div id="delete-post-list" class="space-y-3"></div></div>
+    <div id="edit-service-panel" class="admin-panel-base admin-panel-base-scrollable"><span class="close-button">&times;</span><h3 class="text-2xl font-bold mb-4">Hizmet Düzenle</h3><div id="edit-service-list" class="space-y-3"></div></div>
+    <div id="delete-service-panel" class="admin-panel-base admin-panel-base-scrollable"><span class="close-button">&times;</span><h3 class="text-2xl font-bold mb-4">Hizmet Sil</h3><div id="delete-service-list" class="space-y-3"></div></div>
     
     <div id="confirmation-modal" class="modal">
         <div class="modal-content" style="max-width: 450px;">
@@ -330,58 +249,55 @@
     </div>
 
     <!-- Blog Oluşturma/Güncelleme Paneli -->
-    <div id="admin-panel" class="admin-panel-base">
+    <div id="admin-panel" class="admin-panel-base admin-panel-base-scrollable">
         <h3 id="admin-panel-title" class="text-2xl font-bold mb-4">Yeni Blog Yazısı Ekle</h3>
         <form id="add-post-form" class="space-y-4">
             <input type="hidden" id="post-id-input">
-            <div>
-                <input type="text" id="post-title" class="form-input" placeholder="Yazı Başlığı" required maxlength="100" tabindex="1">
-                <div id="post-title-counter" class="char-counter"></div>
-            </div>
-             <div>
-                <input type="text" id="post-image" class="form-input" placeholder="Görsel URL" required maxlength="2048" tabindex="2">
-                <div id="post-image-counter" class="char-counter"></div>
-            </div>
-            <div>
-                <textarea id="post-summary" class="form-input" rows="3" placeholder="Özet (Kartta görünecek metin)" required maxlength="300" tabindex="3"></textarea>
-                <div id="post-summary-counter" class="char-counter"></div>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Yazının Tamamı</label>
-                <div id="editor-container" tabindex="4"><div id="post-editor"></div></div>
-                <div id="post-editor-counter" class="char-counter"></div>
-            </div>
-            <div class="flex gap-4">
-                <button type="submit" id="form-submit-button" class="btn btn-primary flex-1" tabindex="5">Yazıyı Ekle</button>
-                <button type="button" class="btn btn-secondary close-button" tabindex="6">Kapat</button>
-            </div>
+            <div><input type="text" id="post-title" class="form-input" placeholder="Yazı Başlığı" required maxlength="100" tabindex="1"><div id="post-title-counter" class="char-counter"></div></div>
+            <div><input type="text" id="post-image" class="form-input" placeholder="Görsel URL" required maxlength="2048" tabindex="2"><div id="post-image-counter" class="char-counter"></div></div>
+            <div><textarea id="post-summary" class="form-input" rows="3" placeholder="Özet (Kartta görünecek metin)" required maxlength="300" tabindex="3"></textarea><div id="post-summary-counter" class="char-counter"></div></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Yazının Tamamı</label><div id="editor-container" tabindex="4"><div id="post-editor"></div></div><div id="post-editor-counter" class="char-counter"></div></div>
+            <div class="flex gap-4"><button type="submit" id="form-submit-button" class="btn btn-primary flex-1" tabindex="5">Yazıyı Ekle</button><button type="button" class="btn btn-secondary close-button" tabindex="6">Kapat</button></div>
         </form>
     </div>
+    
+     <!-- Sayfa İçerik Panelleri -->
+    <div id="home-edit-panel" class="admin-panel-base"><span class="close-button">&times;</span><h3 class="text-2xl font-bold mb-4">Anasayfa İçeriklerini Düzenle</h3><form id="home-edit-form" class="space-y-4">
+        <div><label class="font-semibold">Üst Başlık</label><input type="text" id="edit-home-subtitle" class="form-input" required maxlength="50"><div id="edit-home-subtitle-counter" class="char-counter"></div></div>
+        <div><label class="font-semibold">Ana Başlık</label><input type="text" id="edit-home-title" class="form-input" required maxlength="80"><div id="edit-home-title-counter" class="char-counter"></div></div>
+        <div><label class="font-semibold">Açıklama</label><textarea id="edit-home-description" class="form-input" rows="3" required maxlength="150"></textarea><div id="edit-home-description-counter" class="char-counter"></div></div>
+        <div><label class="font-semibold">Görsel URL</label><input type="text" id="edit-home-image" class="form-input" required maxlength="2048"><div id="edit-home-image-counter" class="char-counter"></div></div>
+        <button type="submit" class="btn btn-primary w-full">Değişiklikleri Kaydet</button>
+    </form></div>
+
+    <div id="about-edit-panel" class="admin-panel-base admin-panel-base-scrollable"><span class="close-button">&times;</span><h3 class="text-2xl font-bold mb-4">Hakkımda Sayfasını Düzenle</h3><form id="about-edit-form" class="space-y-6">
+        <div><label class="font-semibold">Ana Başlık</label><input type="text" id="edit-about-title" class="form-input" required maxlength="50"><div id="edit-about-title-counter" class="char-counter"></div></div>
+        <div><label class="font-semibold">Alt Başlık</label><input type="text" id="edit-about-subtitle" class="form-input" required maxlength="100"><div id="edit-about-subtitle-counter" class="char-counter"></div></div>
+        <div><label class="font-semibold">Görsel URL</label><input type="text" id="edit-about-image" class="form-input" required maxlength="2048"><div id="edit-about-image-counter" class="char-counter"></div></div>
+        <div class="border-t pt-4"><h4 class="font-semibold text-lg mb-2">Deneyimler</h4><div id="experiences-list-editor" class="space-y-3"></div><button type="button" id="add-experience-btn" class="btn btn-secondary !py-2 !px-4 mt-2">Deneyim Ekle</button></div>
+        <div class="border-t pt-4"><h4 class="font-semibold text-lg mb-2">Eğitim & Sertifikalar</h4><div id="educations-list-editor" class="space-y-3"></div><button type="button" id="add-education-btn" class="btn btn-secondary !py-2 !px-4 mt-2">Eğitim Ekle</button></div>
+        <button type="submit" class="btn btn-primary w-full">Değişiklikleri Kaydet</button>
+    </form></div>
+    
+    <div id="contact-edit-panel" class="admin-panel-base"><span class="close-button">&times;</span><h3 class="text-2xl font-bold mb-4">İletişim Bilgilerini Düzenle</h3><form id="contact-edit-form" class="space-y-4">
+        <div><label class="font-semibold">Telefon Numarası</label><input type="text" id="edit-contact-phone" class="form-input" required maxlength="30"><div id="edit-contact-phone-counter" class="char-counter"></div></div>
+        <div><label class="font-semibold">E-posta Adresi</label><input type="email" id="edit-contact-email" class="form-input" required maxlength="100"><div id="edit-contact-email-counter" class="char-counter"></div></div>
+        <div><label class="font-semibold">Adres</label><textarea id="edit-contact-address" class="form-input" rows="3" required maxlength="200"></textarea><div id="edit-contact-address-counter" class="char-counter"></div></div>
+        <div><label class="font-semibold">Google Maps Gömme (iframe) Kodu</label><textarea id="edit-contact-map" class="form-input" rows="4" required maxlength="2048"></textarea><div id="edit-contact-map-counter" class="char-counter"></div></div>
+        <button type="submit" class="btn btn-primary w-full">Değişiklikleri Kaydet</button>
+    </form></div>
 
      <!-- Hizmet Oluşturma/Güncelleme Paneli -->
     <div id="service-panel" class="admin-panel-base">
         <h3 id="service-panel-title" class="text-2xl font-bold mb-4">Yeni Hizmet Ekle</h3>
         <form id="add-service-form" class="space-y-4">
             <input type="hidden" id="service-id-input">
-             <div>
-                <input type="text" id="service-title" class="form-input" placeholder="Hizmet Başlığı" required maxlength="50" tabindex="1">
-                <div id="service-title-counter" class="char-counter"></div>
-            </div>
-            <div>
-                <input type="text" id="service-icon" class="form-input" placeholder="Font Awesome İkon Sınıfı (örn: fas fa-running)" required maxlength="50" tabindex="2">
-                 <div id="service-icon-counter" class="char-counter"></div>
-            </div>
-            <div>
-                <textarea id="service-description" class="form-input" rows="4" placeholder="Hizmet Açıklaması" required maxlength="200" tabindex="3"></textarea>
-                 <div id="service-description-counter" class="char-counter"></div>
-            </div>
-            <div class="flex gap-4">
-                <button type="submit" id="service-form-submit-button" class="btn btn-primary flex-1" tabindex="4">Hizmeti Ekle</button>
-                <button type="button" class="btn btn-secondary close-button" tabindex="5">Kapat</button>
-            </div>
+             <div><input type="text" id="service-title" class="form-input" placeholder="Hizmet Başlığı" required maxlength="50" tabindex="1"><div id="service-title-counter" class="char-counter"></div></div>
+            <div><input type="text" id="service-icon" class="form-input" placeholder="Font Awesome İkon Sınıfı (örn: fas fa-running)" required maxlength="50" tabindex="2"><div id="service-icon-counter" class="char-counter"></div></div>
+            <div><textarea id="service-description" class="form-input" rows="4" placeholder="Hizmet Açıklaması" required maxlength="200" tabindex="3"></textarea><div id="service-description-counter" class="char-counter"></div></div>
+            <div class="flex gap-4"><button type="submit" id="service-form-submit-button" class="btn btn-primary flex-1" tabindex="4">Hizmeti Ekle</button><button type="button" class="btn btn-secondary close-button" tabindex="5">Kapat</button></div>
         </form>
     </div>
-
 
     <!-- Footer -->
     <footer class="bg-gradient-to-r from-emerald-200 via-pink-100 to-white text-gray-700">
@@ -406,7 +322,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, getDocs, addDoc, updateDoc, doc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, getDocs, addDoc, updateDoc, doc, deleteDoc, serverTimestamp, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         
         // --- Firebase Configuration ---
@@ -425,11 +341,11 @@
         let itemToDelete = { id: null, type: null }; 
         let allBlogPosts = [];
         let allServices = [];
-        let postsCollection, servicesCollection;
+        let postsCollection, servicesCollection, pageContentCollection;
         
         // --- Element Getters ---
         const getEl = (id) => document.getElementById(id);
-
+        
         function initializeQuill() {
             if (quill) return;
 
@@ -444,13 +360,7 @@
                     ],
                     keyboard: {
                         bindings: {
-                            tab: {
-                                key: 9,
-                                handler: function(range, context) {
-                                    getEl('form-submit-button').focus();
-                                    return false; // Prevent default tab behavior
-                                }
-                            }
+                            tab: { key: 9, handler: () => getEl('form-submit-button').focus() }
                         }
                     }
                 },
@@ -461,15 +371,23 @@
             const quillLimit = 10000;
             const counter = getEl('post-editor-counter');
             quill.on('text-change', () => {
-                const length = quill.getLength() - 1; // -1 for newline
+                const length = quill.getLength() - 1;
                 counter.textContent = `${length} / ${quillLimit}`;
-                if (length > quillLimit) {
-                    counter.classList.add('limit-exceeded');
-                    quill.deleteText(quillLimit, length);
-                } else {
-                    counter.classList.remove('limit-exceeded');
-                }
+                counter.classList.toggle('limit-exceeded', length > quillLimit);
+                if (length > quillLimit) quill.deleteText(quillLimit, length);
             });
+        }
+        
+        // --- Dynamic List Item Creator (for About Panel) ---
+        function createDynamicListItem(container, item = { title: '', subtitle: '' }) {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'p-2 border rounded-md space-y-2 dynamic-list-item';
+            itemDiv.innerHTML = `
+                <input type="text" class="form-input" placeholder="Başlık (örn: Hastane Adı)" value="${item.title}" required>
+                <input type="text" class="form-input" placeholder="Açıklama (örn: Pozisyon ve Yıl)" value="${item.subtitle}" required>
+                <button type="button" class="text-red-500 text-sm font-semibold remove-list-item-btn">Kaldır</button>
+            `;
+            container.appendChild(itemDiv);
         }
 
         // --- Firebase Authentication and Setup ---
@@ -483,12 +401,13 @@
                 
                 postsCollection = collection(db, `artifacts/${appId}/public/data/posts`);
                 servicesCollection = collection(db, `artifacts/${appId}/public/data/services`);
+                pageContentCollection = collection(db, `artifacts/${appId}/public/data/pageContent`);
 
-                await seedInitialData(postsCollection, 'initialPosts');
-                await seedInitialData(servicesCollection, 'initialServices');
+                await seedInitialData();
                 
                 setupPostsListener();
                 setupServicesListener();
+                setupPageContentListeners();
 
             } catch (error) {
                 console.error("Authentication or setup failed:", error);
@@ -496,21 +415,35 @@
         }
         
         // --- Initial Data Seeding ---
-        async function seedInitialData(collectionRef, type) {
-            const querySnapshot = await getDocs(collectionRef);
-            if (querySnapshot.empty) {
-                const initialData = {
-                    initialPosts: [
-                        { title: 'Ofis Çalışanları İçin 5 Basit Egzersiz', date: new Date('2025-06-15T12:00:00Z'), image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=1820&auto=format&fit=crop', summary: 'Masa başında geçen uzun saatlerin getirdiği ağrıları önlemek için yapabileceğiniz kolay ve etkili hareketler.', fullContent: `<p>...içerik...</p>` },
-                    ],
-                    initialServices: [
-                        { title: 'Fizyoterapi', description: 'Kişiye özel değerlendirme ve tedavi programları ile fonksiyonel kapasitenizi en üst düzeye çıkarıyoruz.', icon: 'fas fa-running' },
-                        { title: 'Manuel Terapi', description: 'Sadece ellerle uygulanan özel mobilizasyon ve manipülasyon teknikleri ile ağrılarınıza son veriyoruz.', icon: 'fas fa-hands-helping' },
-                    ]
-                };
-                
-                for (const item of initialData[type]) {
-                    await addDoc(collectionRef, item);
+        async function seedInitialData() {
+            const collectionsToSeed = [
+                { ref: postsCollection, data: [
+                    { title: 'Ofis Çalışanları İçin 5 Basit Egzersiz', date: new Date('2025-06-15T12:00:00Z'), image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=1820&auto=format&fit=crop', summary: '...', fullContent: `<p>...</p>` }
+                ]},
+                { ref: servicesCollection, data: [
+                    { title: 'Fizyoterapi', description: '...', icon: 'fas fa-running' }
+                ]},
+                { ref: pageContentCollection, docId: 'home', data: {
+                    subtitle: 'Fizyoterapi & Sağlıklı Yaşam', title: 'Hareketin İyileştirici Gücünü Keşfedin.', description: '...', image: 'https://images.pexels.com/photos/4046655/pexels-photo-4046655.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+                }},
+                { ref: pageContentCollection, docId: 'about', data: {
+                    title: 'Fizyoterapist Neşe Taş', subtitle: 'İnsana ve harekete olan tutkumla...', image: 'https://images.pexels.com/photos/3912981/pexels-photo-3912981.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+                    experiences: [{title: '[Hastane/Klinik Adı]', subtitle: 'Fizyoterapist (2020-Günümüz)'}],
+                    educations: [{title: '[Üniversite Adı]', subtitle: 'Lisans'}, {title: 'Klinik Pilates Eğitmenliği', subtitle: 'Sertifika'}]
+                }},
+                 { ref: pageContentCollection, docId: 'contact', data: {
+                    phone: '+90 (542) 452 88 03', email: 'info@fztnesetas.com', address: 'Barbaros, Ak Zambak Sok. ...', mapIframe: '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6022.535625749074!2d29.099185048206603!3d40.99751108540818!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14cac882ab345d37%3A0x9b4a2af9b2b902cf!2sVaryap%20Meridian%20A%20BLOK!5e0!3m2!1str!2sca!4v1750095719858!5m2!1str!2sca" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>'
+                }}
+            ];
+
+            for (const seed of collectionsToSeed) {
+                const checkDoc = await getDocs(seed.ref);
+                if(checkDoc.empty) {
+                     if(Array.isArray(seed.data)){
+                        for (const item of seed.data) await addDoc(seed.ref, item);
+                     } else {
+                        await setDoc(doc(seed.ref, seed.docId), seed.data);
+                     }
                 }
             }
         }
@@ -531,6 +464,49 @@
             }, (error) => console.error("Error listening to services:", error));
         }
         
+        function setupPageContentListeners() {
+            onSnapshot(doc(pageContentCollection, 'home'), (doc) => {
+                if(doc.exists()) {
+                    const data = doc.data();
+                    getEl('home-subtitle').textContent = data.subtitle;
+                    getEl('home-title').textContent = data.title;
+                    getEl('home-description').textContent = data.description;
+                    getEl('home-image').src = data.image;
+                }
+            });
+            onSnapshot(doc(pageContentCollection, 'about'), (doc) => {
+                if(doc.exists()) {
+                    const data = doc.data();
+                    getEl('about-title').textContent = data.title;
+                    getEl('about-subtitle').textContent = data.subtitle;
+                    getEl('about-image').src = data.image;
+                    const expContainer = getEl('about-experiences');
+                    expContainer.innerHTML = '';
+                    data.experiences?.forEach(item => {
+                        expContainer.innerHTML += `<li class="flex items-start"><i class="fas fa-check-circle text-primary mt-1 mr-3"></i><span><strong>${item.title}</strong><br><span class="text-sm text-text-color-light">${item.subtitle}</span></span></li>`;
+                    });
+                    const eduContainer = getEl('about-educations');
+                    eduContainer.innerHTML = '';
+                    data.educations?.forEach(item => {
+                        eduContainer.innerHTML += `<li class="flex items-start"><i class="fas fa-graduation-cap text-primary mt-1 mr-3"></i><span><strong>${item.title}</strong><br><span class="text-sm text-text-color-light">${item.subtitle}</span></span></li>`;
+                    });
+                }
+            });
+            onSnapshot(doc(pageContentCollection, 'contact'), (doc) => {
+                if(doc.exists()) {
+                    const data = doc.data();
+                    const phoneEl = getEl('contact-phone');
+                    const emailEl = getEl('contact-email');
+                    phoneEl.textContent = data.phone;
+                    phoneEl.href = `tel:${data.phone.replace(/\s/g, '')}`;
+                    emailEl.textContent = data.email;
+                    emailEl.href = `mailto:${data.email}`;
+                    getEl('contact-address').textContent = data.address;
+                    getEl('map-container').innerHTML = data.mapIframe;
+                }
+            });
+        }
+        
         // --- UI Renderers ---
         function renderBlogPosts() {
             const blogContainer = getEl('blog-container');
@@ -539,12 +515,12 @@
                 const postDate = post.date?.toDate() || new Date();
                 const formattedDate = postDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
                 blogContainer.innerHTML += `
-                    <div class="card w-full md:w-1/2 lg:w-[31%] overflow-hidden group">
-                        <div class="overflow-hidden h-56"><img src="${post.image}" class="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105" alt="${post.title}"></div>
+                    <div class="card w-full sm:w-2/3 md:w-2/5 lg:w-[31%] overflow-hidden group">
+                        <div class="overflow-hidden h-56"><img src="${post.image}" onerror="this.src='https://placehold.co/600x400/e0e0e0/757575?text=G%C3%B6rsel+Bulunamad%C4%B1'" class="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105" alt="${post.title}"></div>
                         <div class="p-6">
                             <p class="text-sm text-primary font-semibold mb-1">${formattedDate}</p>
                             <h3 class="text-xl font-bold text-text-color-dark mb-2">${post.title}</h3>
-                            <p class="text-text-color-light text-sm mb-4">${post.summary}</p>
+                            <p class="text-text-color-light text-sm mb-4 h-12 overflow-hidden">${post.summary}</p>
                             <button data-postid="${post.id}" class="read-more-btn font-semibold text-primary hover:text-primary-hover-color transition-colors">Devamını Oku <i class="fas fa-arrow-right ml-1"></i></button>
                         </div>
                     </div>`;
@@ -556,7 +532,7 @@
             servicesContainer.innerHTML = '';
             allServices.forEach(service => {
                 servicesContainer.innerHTML += `
-                     <div class="card w-full md:w-1/2 lg:w-[31%] p-8 text-center border-t-4 border-transparent hover:border-primary">
+                     <div class="card w-full sm:w-2/3 md:w-2/5 lg:w-[31%] p-8 text-center border-t-4 border-transparent hover:border-primary">
                         <div class="text-primary text-4xl mb-4"><i class="${service.icon}"></i></div>
                         <h3 class="text-2xl font-bold text-text-color-dark mb-2">${service.title}</h3>
                         <p class="text-text-color-light">${service.description}</p>
@@ -572,9 +548,7 @@
         function showPage(pageId) {
             pages.forEach(page => page.style.display = 'none');
             getEl(pageId)?.style.setProperty('display', 'block');
-            navLinks.forEach(link => {
-                link.classList.toggle('active', link.hash === `#${pageId}`);
-            });
+            navLinks.forEach(link => link.classList.toggle('active', link.hash === `#${pageId}`));
             window.scrollTo(0, 0);
         }
         pageLinks.forEach(link => { 
@@ -592,9 +566,7 @@
         function hideAllModals() {
             modals.forEach(m => m.style.display = 'none');
         }
-        document.querySelectorAll('.close-button').forEach(button => {
-            button.addEventListener('click', hideAllModals);
-        });
+        document.querySelectorAll('.close-button').forEach(button => button.addEventListener('click', hideAllModals));
         getEl('cancel-delete-btn').addEventListener('click', hideAllModals);
 
         // --- Admin Authentication ---
@@ -618,15 +590,20 @@
             getEl('password-input').value = '';
         });
         
-        // --- Admin Menu Logic ---
-        getEl('open-create-panel-btn').addEventListener('click', () => openPostPanel());
-        getEl('open-edit-panel-btn').addEventListener('click', () => openListPanel('edit', 'post'));
-        getEl('open-delete-panel-btn').addEventListener('click', () => openListPanel('delete', 'post'));
-        getEl('open-create-service-panel-btn').addEventListener('click', () => openServicePanel());
-        getEl('open-edit-service-panel-btn').addEventListener('click', () => openListPanel('edit', 'service'));
-        getEl('open-delete-service-panel-btn').addEventListener('click', () => openListPanel('delete', 'service'));
+        // --- Admin Menu Logic & Panel Openers ---
+        const adminMenuActions = {
+            'open-create-panel-btn': () => openPostPanel(),
+            'open-edit-panel-btn': () => openListPanel('edit', 'post'),
+            'open-delete-panel-btn': () => openListPanel('delete', 'post'),
+            'open-create-service-panel-btn': () => openServicePanel(),
+            'open-edit-service-panel-btn': () => openListPanel('edit', 'service'),
+            'open-delete-service-panel-btn': () => openListPanel('delete', 'service'),
+            'open-home-edit-panel-btn': () => openPageContentPanel('home'),
+            'open-about-edit-panel-btn': () => openPageContentPanel('about'),
+            'open-contact-edit-panel-btn': () => openPageContentPanel('contact')
+        };
+        Object.keys(adminMenuActions).forEach(id => getEl(id).addEventListener('click', adminMenuActions[id]));
 
-        // --- Generic Panel/List Openers ---
         function openListPanel(action, type) {
             hideAllModals();
             const panel = getEl(`${action}-${type}-panel`);
@@ -677,6 +654,9 @@
                     getEl('blog-modal').style.display = "block";
                 }
             }
+             if (target.matches('.remove-list-item-btn')) {
+                target.closest('.dynamic-list-item').remove();
+            }
         });
 
         // --- Delete Confirmation ---
@@ -687,27 +667,130 @@
                     await deleteDoc(doc(collectionRef, itemToDelete.id));
                     hideAllModals();
                     showNotification('Öğe başarıyla silindi.', false);
-                } catch(error) {
-                    showNotification('Öğe silinirken bir hata oluştu.', true);
-                }
+                } catch(error) { showNotification('Öğe silinirken bir hata oluştu.', true); }
             }
         });
+        
+        // --- Character Counter Setup ---
+        function setupCharCounter(elementId) {
+            const input = getEl(elementId);
+            const counter = getEl(`${elementId}-counter`);
+            const maxLength = input.maxLength;
+            
+            const updateCounter = () => {
+                const currentLength = input.value.length;
+                counter.textContent = `${currentLength} / ${maxLength}`;
+                counter.classList.toggle('limit-exceeded', currentLength > maxLength);
+            };
+            input.addEventListener('input', updateCounter);
+            updateCounter();
+        }
 
-        // --- Service Panel ---
+        // --- Page Content Edit Panels ---
+        async function openPageContentPanel(pageName) {
+            hideAllModals();
+            const panel = getEl(`${pageName}-edit-panel`);
+             try {
+                const docSnap = await getDoc(doc(pageContentCollection, pageName));
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (pageName === 'home') {
+                        getEl('edit-home-title').value = data.title;
+                        getEl('edit-home-subtitle').value = data.subtitle;
+                        getEl('edit-home-description').value = data.description;
+                        getEl('edit-home-image').value = data.image;
+                    } else if (pageName === 'about') {
+                         getEl('edit-about-title').value = data.title;
+                         getEl('edit-about-subtitle').value = data.subtitle;
+                         getEl('edit-about-image').value = data.image;
+                         const expContainer = getEl('experiences-list-editor');
+                         expContainer.innerHTML = '';
+                         data.experiences.forEach(item => createDynamicListItem(expContainer, item, 'experience'));
+                         const eduContainer = getEl('educations-list-editor');
+                         eduContainer.innerHTML = '';
+                         data.educations.forEach(item => createDynamicListItem(eduContainer, item, 'education'));
+                    } else if (pageName === 'contact') {
+                         getEl('edit-contact-phone').value = data.phone;
+                         getEl('edit-contact-email').value = data.email;
+                         getEl('edit-contact-address').value = data.address;
+                         getEl('edit-contact-map').value = data.mapIframe;
+                    }
+                }
+            } catch (error) {
+                console.error("Error getting page content:", error);
+            }
+            
+            panel.querySelectorAll('input, textarea').forEach(el => setupCharCounter(el.id));
+            panel.style.display = 'block';
+        }
+        
+        // --- Dynamic list buttons for About panel ---
+        getEl('add-experience-btn').addEventListener('click', () => createDynamicListItem(getEl('experiences-list-editor')));
+        getEl('add-education-btn').addEventListener('click', () => createDynamicListItem(getEl('educations-list-editor')));
+        
+        // --- Form Submit Handlers ---
+        getEl('home-edit-form').addEventListener('submit', (e) => { e.preventDefault(); saveData('home'); });
+        getEl('about-edit-form').addEventListener('submit', (e) => { e.preventDefault(); saveData('about'); });
+        getEl('contact-edit-form').addEventListener('submit', (e) => { e.preventDefault(); saveData('contact'); });
+
+        async function saveData(pageName) {
+            let data = {};
+            if (pageName === 'home') {
+                data = {
+                    title: getEl('edit-home-title').value,
+                    subtitle: getEl('edit-home-subtitle').value,
+                    description: getEl('edit-home-description').value,
+                    image: getEl('edit-home-image').value,
+                };
+            } else if (pageName === 'about') {
+                 data = {
+                    title: getEl('edit-about-title').value,
+                    subtitle: getEl('edit-about-subtitle').value,
+                    image: getEl('edit-about-image').value,
+                    experiences: Array.from(getEl('experiences-list-editor').children).map(item => ({
+                        title: item.children[0].value,
+                        subtitle: item.children[1].value
+                    })),
+                    educations: Array.from(getEl('educations-list-editor').children).map(item => ({
+                        title: item.children[0].value,
+                        subtitle: item.children[1].value
+                    }))
+                 };
+            } else if(pageName === 'contact') {
+                data = {
+                    phone: getEl('edit-contact-phone').value,
+                    email: getEl('edit-contact-email').value,
+                    address: getEl('edit-contact-address').value,
+                    mapIframe: getEl('edit-contact-map').value
+                };
+            }
+
+            try {
+                await setDoc(doc(pageContentCollection, pageName), data);
+                hideAllModals();
+                showNotification(`${pageName} sayfası başarıyla güncellendi.`);
+            } catch(error) {
+                showNotification('Kaydederken bir hata oluştu.', true);
+            }
+        }
+
+        // --- CRUD Panels (Service & Post) ---
         function openServicePanel(id = null) {
             hideAllModals();
-            getEl('add-service-form').reset();
+            const form = getEl('add-service-form');
+            form.reset();
             const isEditing = !!id;
             getEl('service-panel-title').innerText = isEditing ? 'Hizmet Düzenle' : 'Yeni Hizmet Ekle';
             getEl('service-form-submit-button').innerText = isEditing ? 'Hizmeti Güncelle' : 'Hizmeti Ekle';
             getEl('service-id-input').value = id || '';
             if (isEditing) {
                 const service = allServices.find(s => s.id === id);
-                getEl('service-title').value = service.title;
-                getEl('service-icon').value = service.icon;
-                getEl('service-description').value = service.description;
+                Object.keys(service).forEach(key => {
+                    const el = getEl(`service-${key}`);
+                    if (el) el.value = service[key];
+                });
             }
-            ['service-title', 'service-icon', 'service-description'].forEach(elId => setupCharCounter(elId));
+            ['service-title', 'service-icon', 'service-description'].forEach(setupCharCounter);
             getEl('service-panel').style.display = 'block';
         }
         getEl('add-service-form').addEventListener('submit', async e => {
@@ -728,7 +811,6 @@
             }
         });
 
-        // --- Post Panel (Blog) ---
         function openPostPanel(id = null) {
             hideAllModals();
             getEl('add-post-form').reset();
@@ -748,7 +830,7 @@
             } else {
                  quill.setText('');
             }
-            ['post-title', 'post-image', 'post-summary'].forEach(elId => setupCharCounter(elId));
+            ['post-title', 'post-image', 'post-summary'].forEach(setupCharCounter);
             quill.on('text-change', () => {
                  const counter = getEl('post-editor-counter');
                  const length = quill.getLength() - 1;
@@ -756,7 +838,6 @@
                  counter.textContent = `${length} / ${quillLimit}`;
                  counter.classList.toggle('limit-exceeded', length > quillLimit);
             });
-            quill.getModule('toolbar').container.parentElement.querySelector('.ql-editor').dispatchEvent(new Event('text-change'));
             getEl('admin-panel').style.display = 'block';
         }
         getEl('add-post-form').addEventListener('submit', async e => {
@@ -779,7 +860,6 @@
             }
         });
 
-        // --- Formspree AJAX Submission ---
         getEl('appointment-form').addEventListener('submit', async function (e) {
             e.preventDefault();
             const form = e.target;
@@ -827,21 +907,7 @@
                 setTimeout(() => { if(document.body.contains(notification)) document.body.removeChild(notification); }, 300);
             }, 3000);
         }
-
-        function setupCharCounter(elementId) {
-            const input = getEl(elementId);
-            const counter = getEl(`${elementId}-counter`);
-            const maxLength = input.maxLength;
-            
-            const updateCounter = () => {
-                const currentLength = input.value.length;
-                counter.textContent = `${currentLength} / ${maxLength}`;
-                counter.classList.toggle('limit-exceeded', currentLength > maxLength);
-            };
-            input.addEventListener('input', updateCounter);
-            updateCounter(); // Initial call
-        }
-
+        
         // --- Initial Load ---
         setupFirebase();
         showPage('home');
